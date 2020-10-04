@@ -10,13 +10,16 @@
 #include <unistd.h>
 #include <time.h>
 #include <regex>
-
-#include "basis.h"
-#include "basis.cpp"
-#include "io.cpp"
 using namespace std;
 
+#include "basis.h"
+#include "io.cpp"
+#include "bewertung.cpp"
+#include "basis.cpp"
+#include "spielfeld.cpp"
+
 ofstream spoken("spoken");
+
 
 template <class T, size_t N>
 constexpr size_t size(T(&)[N]) {
@@ -97,7 +100,7 @@ int main(int argc, char **argv) {
 
                     ii++;
                 }
-                cout << " geladenes Spielfeld: \n";
+                cout << " geladenes spielfeld: \n";
                 disp(grundfeld);
                 geladen = true;
             }
@@ -117,11 +120,11 @@ int main(int argc, char **argv) {
     {
         for (int i = 0; i < ende + 2; i++) {
             testbrett[i] = new feldtyp;
-            testspiel[i] = new Spielfeld();
+            testspiel[i] = new spielfeld();
         }
     }
 
-    Spielfeld spiel(grundfeld, +1, 0);
+    spielfeld spiel(grundfeld, +1, 0);
 
     spiel.to_feldtyp(xbrettchen);
 

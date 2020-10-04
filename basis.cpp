@@ -1,12 +1,8 @@
-feldtyp * testbrett[ende+1];
+#include "basis.h"
+#include "spielfeld.h"
+#include "bewertung.cpp"
 
-Spielfeld * testspiel[ende+1];
-
-
-howitends __end = nothing;
-
-
-int bp (Spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _stopp, /*int devwert, */int NullFlag) { 	// Bewertung, Planung
+static int bp (spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _stopp, /*int devwert, */int NullFlag) { 	// Bewertung, Planung
 
     if (NullFlag == 3) {
         spiel.Farbe = farbe; }

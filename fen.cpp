@@ -1,3 +1,19 @@
+#include <sstream>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <math.h>
+#include <cstdlib>
+#include <ctype.h>
+#include <unistd.h>
+#include <time.h>
+#include <regex>
+using namespace std;
+
+#include "basis.h"
+#include "spielfeld.h"
 
 const char *fen_char[] = {  // bei writ()
         "S_Tr",   "S_Kr",   "S_K",    "S_D",    "S_T",  "S_L",  "S_P",
@@ -6,7 +22,7 @@ const char *fen_char[] = {  // bei writ()
         "W_D",    "W_K",    "W_Kr",   "W_Tr",   "RAND"
 };
 
-void read_fen(Spielfeld sp, string s) {
+void read_fen(spielfeld sp, string s) {
     std::regex rgx_fen("(\\\\d|[A-Za-y0-9])");
 
     int ii = 0;
