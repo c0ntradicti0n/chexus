@@ -21,12 +21,17 @@ using namespace std;
 ofstream spoken("spoken");
 
 
+int run(int _stopp, spielfeld &spiel);
+
+string getString(string *names, int index, int index_index);
+
 template <class T, size_t N>
 constexpr size_t size(T(&)[N]) {
     return N;
 }
 
 int main(int argc, char **argv) {
+    srand (time(NULL));
     char *fvalue = NULL;
     string svalue;
     int ladefeld[120] = {RAND};
@@ -252,7 +257,7 @@ int main(int argc, char **argv) {
                     move_sort_schema();
 
                     //           if (_stopp == 1)
-                    {wert = bp(spiel, spiel.Farbe, -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */1);}
+                    { wert =  run(_stopp, spiel); }
                     //    if (_stopp==stopp-4) devwert = wert;
                     /*     else {
                               int delta = 25;
@@ -336,13 +341,21 @@ int main(int argc, char **argv) {
                         break;
                     }
                 }
-                cout << "info depth " << stopp << " score cp " << wert/1.5 << " pv " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
-                     << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << " " << grundfeld_bezeichnungen[bester_zug[1].z.pos.pos1]
-                     << grundfeld_bezeichnungen[bester_zug[1].z.pos.pos2] << " " << grundfeld_bezeichnungen[bester_zug[2].z.pos.pos1]
-                     << grundfeld_bezeichnungen[bester_zug[2].z.pos.pos2] << " " << grundfeld_bezeichnungen[bester_zug[3].z.pos.pos1]
-                     << grundfeld_bezeichnungen[bester_zug[3].z.pos.pos2] << " " << grundfeld_bezeichnungen[bester_zug[4].z.pos.pos1]
-                     << grundfeld_bezeichnungen[bester_zug[4].z.pos.pos2] << "\n";
-                cout << "bestmove " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
+                cout << "info depth " << stopp << " score cp " << wert/1.5 << " pv " <<
+                     " " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2]
+                     <<"(" << bester_zug[0].bewertung <<")" <<
+                     " " << grundfeld_bezeichnungen[bester_zug[1].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[1].z.pos.pos2]
+                     <<"(" << bester_zug[1].bewertung <<")" <<
+                     " " << grundfeld_bezeichnungen[bester_zug[2].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[2].z.pos.pos2]
+                     <<"(" << bester_zug[2].bewertung<<")" <<
+                     " " << grundfeld_bezeichnungen[bester_zug[3].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[3].z.pos.pos2]
+                     <<"(" << bester_zug[3].bewertung <<")" <<
+                     " " << grundfeld_bezeichnungen[bester_zug[4].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[4].z.pos.pos2]
+                     <<"(" << bester_zug[4].bewertung <<")" <<
+                     " " << grundfeld_bezeichnungen[bester_zug[5].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[5].z.pos.pos2]
+                     <<"(" << bester_zug[5].bewertung <<")" <<
+                     "\n";
+                cout << "bestmove ->" <<bester_zug[0].z.pos.pos1<< "-< "<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
                      << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";
 
 
@@ -411,7 +424,7 @@ int main(int argc, char **argv) {
             cout << "Suchtiefe " << _stopp << "\n";
             //   if (_stopp == 0)
 
-            wert = bp(spiel, spiel.Farbe, -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */1);
+            wert = run(_stopp, spiel);
             //     if (_stopp == stopp-2) devwert = wert;
             /*     else {
                      int alpha = wert - 30;
@@ -486,4 +499,8 @@ int main(int argc, char **argv) {
 
     spoken.close();
     return 0;
+}
+
+int run(int _stopp, spielfeld &spiel) {
+   return bp(spiel, spiel.Farbe, +1000, -1000, 0, _stopp);
 }

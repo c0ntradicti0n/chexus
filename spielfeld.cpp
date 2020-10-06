@@ -104,7 +104,8 @@ howitends spielfeld::check_end(vector<string>& _zuege)  {
 
         if (Farbe < 0)  {
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
-                                   this->wking)) {/*test = 1;*/ return schachmatt;}  // gewonnen
+                                   this->wking)) {/*test = 1;*/
+                return schachmatt;}  // gewonnen
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
                                    this->bking)) {/*test = 1;*/ return matt;}        // verloren

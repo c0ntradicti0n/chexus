@@ -696,17 +696,14 @@ static int make_schema(denkpaar _zugstapel[200], int _n, int _stufe)  {
     return 0;
 }
 
-static int move_sort_schema(int c = 6)  { // Schema 2 Z¬∏ge nach vorn schieben
+static int move_sort_schema(int c = 6)  {
+    // Schema 2 Z¬∏ge nach vorn schieben
     for (int i = 0; i < c; i++)  {
         for (int e = 1; e < ende; e++)  {
             for (int j = 0; j < sortiertiefe; j++)  {
-                sort_schema_bewertung[e - 1][j] = sort_schema_bewertung[e][j]; // übernimm sort_schema-bewertung eine Stufe niedriger
-                //	sort_schema_bewertung[e-1][j].bewertung *= 0,1; //multipliziere
-                // es mit 0,0000000001
-                sort_schema[e - 1][j] = sort_schema[e][j];                     // übernimm das Schema eine Stufe niedriger
-
-                /*	sort_schema_bewertung[e-1][j].z.id  = 0;
-                   sort_schema[e-1][j]			  = 0;		*/
+                sort_schema_bewertung[e - 1][j] = sort_schema_bewertung[e][j];
+                // übernimm sort_schema-bewertung eine Stufe niedriger
+                sort_schema[e - 1][j] = sort_schema[e][j];
             }
         }
     }
