@@ -33,7 +33,7 @@ int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _sto
         testspiel[stufe]->zug(zugstapel[spiel.getStufe()][i]);
 
         __end = spiel.last_moves();
-        if (__end == nothing) {
+        if (__end == NORMAL) {
             nn += 1;
         }
 

@@ -70,23 +70,23 @@ howitends spielfeld::check_end(vector<string>& _zuege)  {
         //disp();
         cout << "He took the king!\n";
         //  test = 1;
-        return schachmatt;
+        return SCHACKMATT;
     }
 
     if (this->test_drohung(Feld[this->getStufe()], 1, this->wking))  {
         //cout << "weiss hat schach/n";
         if (Farbe > 0)  {
-            //return matt;        // verloren
+            //return MATT;        // verloren
         }
-        else {/*test = 1;*/ return schachmatt;}
+        else {/*test = 1;*/ return SCHACKMATT;}
     }
 
     if (this->test_drohung(Feld[this->getStufe()], -1, this->bking))  {
         //cout << "schwarz hat schach/n";
         if (Farbe < 0)  {
-            //return matt;        // verloren
+            //return MATT;        // verloren
         }
-        else {/*test = 1;*/ return schachmatt;}
+        else {/*test = 1;*/ return SCHACKMATT;}
     }
 
 
@@ -95,29 +95,29 @@ howitends spielfeld::check_end(vector<string>& _zuege)  {
         if (Farbe > 0)  {
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
-                                   this->wking)) {/*test = 1;*/ return matt;}       // verloren
+                                   this->wking)) {/*test = 1;*/ return MATT;}       // verloren
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
-                                   this->bking)) {/*test = 1;*/ return schachmatt;}  // gewonnen
+                                   this->bking)) {/*test = 1;*/ return SCHACKMATT;}  // gewonnen
         }
 
 
         if (Farbe < 0)  {
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
                                    this->wking)) {/*test = 1;*/
-                return schachmatt;}  // gewonnen
+                return SCHACKMATT;}  // gewonnen
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
-                                   this->bking)) {/*test = 1;*/ return matt;}        // verloren
+                                   this->bking)) {/*test = 1;*/ return MATT;}        // verloren
         }
-        return patt;                                               // kein zug
+        return PATT;                                               // kein zug
     }                                                           // moeglich  (was
-    // ist mit remis
+    // ist mit REMIS
     // bei
     // gefesselten
 
-    if (zuege_wied(_zuege)) return remis;
-    else return nothing;
+    if (zuege_wied(_zuege)) return REMIS;
+    else return NORMAL;
 }
 
 int gegner;
@@ -145,7 +145,7 @@ howitends spielfeld::last_moves()  {
             return schaach;
         }
     }
-    return nothing;
+    return NORMAL;
 }
 
 spielfeld::spielfeld()  {

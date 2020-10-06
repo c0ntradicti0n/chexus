@@ -46,13 +46,15 @@ struct feldtyp  {
     int x;
 };
 
-static int eigene_farbe = 1;  // Sicht des Computers --1-0
-static int stopp        = 5;  // normale Suchtiefe, wird ver‚Ä∞ndert
-static const int ende   = 15; // maximale Suchtiefe
-static int sortiertiefe = 15; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
+int eigene_farbe = 1;  // Sicht des Computers --1-0
+int stopp        = 5;  // normale Suchtiefe, wird ver‚Ä∞ndert
+const int ende   = 15; // maximale Suchtiefe
+int sortiertiefe = 15; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
+//int figurenwert_weiss = 0;
+//int figurenwert_schwarz = 0;
+int figurenwert = 0;
 
-
-static int KooIch       = 300;
+int KooIch       = 300;
 static int KooEr        = 50;
 static double AttackIch = 5;
 static double AttackEr  = 6; //HIER
@@ -82,8 +84,8 @@ static bool killFlag           = true;
 static const int MAX_WERT      = 99999999;
 
 
-enum howitends      { matt       = -MAX_WERT, patt = -1, remis = 0, schaach = 1,
-    schachmatt = +MAX_WERT, nothing };
+enum howitends      { MATT       = -MAX_WERT, PATT = -1, REMIS = 0, schaach = 1,
+    SCHACKMATT = +MAX_WERT, NORMAL };
 enum espezial           { NICHTS = 0, SCHACH = 1, UNRUH = 2 };
 enum spiel_status   { Eroeffnung, Mittelspiel, Spaetspiel, Endspiel };
 static const char *spiel_status_namen[] = {

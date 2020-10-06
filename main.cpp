@@ -316,23 +316,23 @@ int main(int argc, char **argv) {
 
                 exit = true;
                 switch (spiel.check_end(zuege)) {
-                    case matt: {
+                    case MATT: {
                         cout << "Verloren\n";
                         break;
                     }
-                    case patt: {
+                    case PATT: {
                         cout << "Patt\n";
                         break;
                     }
-                    case remis: {
+                    case REMIS: {
                         cout << "Remis\n";
                         break;
                     }
-                    case schachmatt: {
+                    case SCHACKMATT: {
                         cout << "Gewonnen\n";
                         break;
                     }
-                    case nothing: {
+                    case NORMAL: {
                         exit = false;
                         break;
                     }
@@ -461,24 +461,24 @@ int main(int argc, char **argv) {
 
         exit = true;
         switch (spiel.check_end(zuege)) {
-            case matt: {
+            case MATT: {
                 cout << "Verloren\n";
                 break;
             }
-            case patt: {
+            case PATT: {
                 cout << "nn = " << spiel.nn;
                 cout << "Patt\n";
                 break;
             }
-            case remis: {
+            case REMIS: {
                 cout << "Remis\n";
                 break;
             }
-            case schachmatt: {
+            case SCHACKMATT: {
                 cout << "Gewonnen/n";
                 break;
             }
-            case nothing: {
+            case NORMAL: {
                 //cout << "weiter\n";
                 exit = false;
                 break;
@@ -502,5 +502,5 @@ int main(int argc, char **argv) {
 }
 
 int run(int _stopp, spielfeld &spiel) {
-   return bp(spiel, spiel.Farbe, +1000, -1000, 0, _stopp);
+   return bp(spiel, spiel.Farbe,  -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */1);
 }
