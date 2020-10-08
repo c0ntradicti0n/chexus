@@ -123,6 +123,8 @@ map<int, char> MAP_BW = {{RAND, RAND}, {LEER, LEER},
                     {W_Bp_l, S_Bp_l}, {W_Bx, S_Bx},
                     };
 
+map<int, string> COLOR_NAMES = {{-1, "WHITE"}, {1, "BLACK"}};
+
 static const char *figuren_char[] = { // bei disp()
         "tmr", "knr", "kon", "dam", "tum", "laf", "pdf", "bau", "baU", "bar", "bal",
         "bax",

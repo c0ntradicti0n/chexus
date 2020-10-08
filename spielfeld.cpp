@@ -866,7 +866,7 @@ void spielfeld::disp()  {
     cout << "\n";
     int breite = 3;
 
-    cout << "      " << "  >--A--v--B--v--C--v--D--v--E--v--F--v--G--v--H--<\n";
+    cout << COLOR_NAMES[Farbe] << " " << "  >--A--v--B--v--C--v--D--v--E--v--F--v--G--v--H--<\n";
     cout << "      " << "v >-----+-----+-----+-----+-----+-----+-----+-----< v\n" <<
          "      ";
 
