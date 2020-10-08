@@ -6,19 +6,71 @@
 #include "gtest/gtest.h"
 
 #include "nexus_test.h"
+#include "intelligence.cpp"
+#include "bewertung.cpp"
 #include "spielfeld.cpp"
+
 
 #include <iostream>
 
 // Google Test test cases are created using a C++ preprocessor macro
 // Here, a "test suite" name and a specific "test name" are provided.
-TEST(module_name, test_name) {
-    spielfeld* x = new spielfeld(patt_feld);
-    denkpaar * z = x->makeZugstapel();
-    howitends end = x->check_end(*new vector<string>());
+TEST(module_name, test_patt_black) {
+    spielfeld* spiel = new spielfeld(patt_feld, eigene_farbe=-1);
+    denkpaar * z = spiel->makeZugstapel();
+    howitends end = spiel->check_end(*new vector<string>());
     std::cout << end << std::endl;
     ASSERT_EQ(PATT, end);
 }
+TEST(module_name, test_patt_white) {
+    spielfeld* spiel = new spielfeld(patt_feld, eigene_farbe=1);
+    denkpaar * z = spiel->makeZugstapel();
+    howitends end = spiel->check_end(*new vector<string>());
+    std::cout << end << std::endl;
+    ASSERT_EQ(NORMAL, end);
+}
+
+TEST(module_name, test_patt_zuege )  {
+    init_test_spiel_array();
+    spielfeld* spiel = new spielfeld(patt_feld, eigene_farbe = 1);
+    spiel->makeZugstapel();
+
+    cout<<"zugstapel " << spiel->Farbe << endl;
+    spiel->print_zugstapel();
+
+    int wert = bp(*spiel, 1,  -MAX_WERT, MAX_WERT, 0, 5, 1);
+    ASSERT_EQ(wert, SCHACHMATT);
+}
+
+TEST(module_name, test_before_patt_b )  {
+
+    spielfeld* spiel = new spielfeld(before_patt_feld, eigene_farbe = -1);
+    spiel->makeZugstapel();
+
+    cout<<"zugstapel " << spiel->Farbe << endl;
+    spiel->print_zugstapel();
+
+    int wert = run_speaking(8, *spiel);
+    ASSERT_EQ(wert, BLACK_SCHACHMATT);
+}
+
+TEST(module_name, test_before_patt_w )  {
+
+
+    spielfeld* spiel = new spielfeld(before_patt_feld, eigene_farbe = -1);
+    spiel->disp();
+    spiel->switch_feld();
+    spiel->disp();
+
+    spiel->makeZugstapel();
+
+    cout<<"zugstapel " << spiel->Farbe << endl;
+    spiel->print_zugstapel();
+
+    int wert = run_speaking(8, *spiel);
+    ASSERT_EQ(wert, SCHACHMATT);
+}
+
 
 // Google Test can be run manually from the main() function
 // or, it can be linked to the gtest_main library for an already

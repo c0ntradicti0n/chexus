@@ -61,32 +61,37 @@ bool zuege_wied(vector<string>& _zuege)  {
     }
 }
 
-howitends spielfeld::check_end(vector<string>& _zuege)  {
+howitends spielfeld::check_end(vector<string> &_zuege) {
     find_kings();
     //print_zugstapel();
     //cout << "STUFE::: "<< this ->getStufe() << " w king: "<< this->wking << " b king: " << this->bking;
 
-    if (this -> wking == 0 || this -> bking == 0)  {
+    if (this -> wking == 0)  {
         //disp();
-        cout << "He took the king!\n";
+        cout << "He took the white king!\n";
         //  test = 1;
-        return SCHACKMATT;
+        return SCHACHMATT;
+    }
+    if (this -> bking == 0)  {
+        //disp();
+        cout << "He took the black king!\n";
+        //  test = 1;
+        return BLACK_SCHACHMATT;
     }
 
+
     if (this->test_drohung(Feld[this->getStufe()], 1, this->wking))  {
-        //cout << "weiss hat schach/n";
-        if (Farbe > 0)  {
-            //return MATT;        // verloren
-        }
-        else {/*test = 1;*/ return SCHACKMATT;}
+        return SCHACHMATT;
     }
 
     if (this->test_drohung(Feld[this->getStufe()], -1, this->bking))  {
         //cout << "schwarz hat schach/n";
         if (Farbe < 0)  {
-            //return MATT;        // verloren
+            return SCHACHMATT;
         }
-        else {/*test = 1;*/ return SCHACKMATT;}
+        else {
+            return BLACK_SCHACHMATT;
+        }
     }
 
 
@@ -95,22 +100,25 @@ howitends spielfeld::check_end(vector<string>& _zuege)  {
         if (Farbe > 0)  {
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
-                                   this->wking)) {/*test = 1;*/ return MATT;}       // verloren
+                                   this->wking)) {/*test = 1;*/ return SCHACHMATT;}       // verloren
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
-                                   this->bking)) {/*test = 1;*/ return SCHACKMATT;}  // gewonnen
+                                   this->bking)) {/*test = 1;*/ return BLACK_SCHACHMATT;}  // gewonnen
         }
 
 
         if (Farbe < 0)  {
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
                                    this->wking)) {/*test = 1;*/
-                return SCHACKMATT;}  // gewonnen
+                return SCHACHMATT;}  // gewonnen
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
-                                   this->bking)) {/*test = 1;*/ return MATT;}        // verloren
+                                   this->bking)) {/*test = 1;*/ return BLACK_SCHACHMATT;}        // verloren
         }
-        return PATT;                                               // kein zug
+        if (this->n == 0) {
+            return PATT;
+        }
+        else return NORMAL;
     }                                                           // moeglich  (was
     // ist mit REMIS
     // bei
@@ -134,7 +142,7 @@ howitends spielfeld::last_moves()  {
             //cout << "weiss hat schach";
 
             /* test =1;*/
-            return schaach; // verloren
+            return SCHACHMATT; // verloren
         }
     }
 
@@ -142,7 +150,7 @@ howitends spielfeld::last_moves()  {
         if (this->test_drohung(Feld[this->getStufe()], -1, this->bking))  {
             //cout << "schwarz hat schach";
             /*test = 1;*/
-            return schaach;
+            return SCHACHMATT;
         }
     }
     return NORMAL;
@@ -891,7 +899,19 @@ void spielfeld::disp_cleanest()  {
     cout << "\n";
 }
 
+void spielfeld::switch_feld()  {
+    Farbe *= -1;
+    feldtyp neues = feldtyp();
+    for (int i = 21; i <= 98; i++)  {
+        neues.feld[119-i] = MAP_BW[Feld[Stufe][i]];
+    }
+    for (int i = 21; i <= 98; i++) {
+        Feld[Stufe][i] = neues.feld[i];
+    }
+}
+
 void spielfeld::print_zugstapel()  {
+    cout << "n=" << n << endl;
     for (int i = 0; i < n; i++)  {
         cout << figuren_char[zugstapel[Stufe][i].figur  + figurenanzahl] << ": "
              << int(zugstapel[Stufe][i].z.pos.pos1) << "(" <<

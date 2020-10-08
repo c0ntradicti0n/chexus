@@ -12,7 +12,7 @@
 #include <regex>
 using namespace std;
 
-#include "basis.h"
+#include "intelligence.h"
 #include "common_functions.h"
 
 
@@ -86,31 +86,6 @@ static void disp(int feld[120], int form = 0)  {
     }
     cout << "  >--A--+--B--+--C--+--D--+--E--+--F--+--G--+--H--<  \n";
     cout << "\n";
-}
-
-static void print_zugstapel(int n, denkpaar zugstapel[200])  {
-    for (int i = 0; i < n; i++)  {
-        cout << figuren_char[zugstapel[i].figur  + figurenanzahl] << ": "
-             << int(zugstapel[i].z.pos.pos1) << "(" <<
-             grundfeld_bezeichnungen[zugstapel[i].z.pos.pos1] << ")  => "
-             << int(zugstapel[i].z.pos.pos2) << "(" <<
-             grundfeld_bezeichnungen[zugstapel[i].z.pos.pos2] << ")";
-
-        if (zugstapel[i].nw) {
-            cout << " | ";
-            int max = zugstapel[i].nw;
-
-            for (int j = 0; j < max; j++)    {
-                cout << int(zugstapel[i].verwandelung[j].pos1) << "(" <<
-                     grundfeld_bezeichnungen[zugstapel[i].verwandelung[j].pos1] << ")  <= "
-                     << figuren_char[zugstapel[i].verwandelung[j].fig  + figurenanzahl];
-
-                if (j < max - 1) cout << ", ";
-            }
-        }
-
-        cout << "\n";
-    }
 }
 
 static void disp_cleanest(int feld[120])  {

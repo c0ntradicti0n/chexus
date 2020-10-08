@@ -1,4 +1,4 @@
-#include "basis.h"
+#include "intelligence.h"
 #ifndef BEWERTUNG
 #define BEWERTUNG
 

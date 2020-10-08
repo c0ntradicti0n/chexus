@@ -12,7 +12,7 @@
 #include <regex>
 using namespace std;
 
-#include "basis.h"
+#include "intelligence.h"
 #include "spielfeld.h"
 
 const char *fen_char[] = {  // bei writ()

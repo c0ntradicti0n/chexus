@@ -12,16 +12,13 @@
 #include <regex>
 using namespace std;
 
-#include "basis.h"
+#include "intelligence.h"
 #include "io.cpp"
 #include "bewertung.cpp"
-#include "basis.cpp"
+#include "intelligence.cpp"
 #include "spielfeld.cpp"
 
 ofstream spoken("spoken");
-
-
-int run(int _stopp, spielfeld &spiel);
 
 string getString(string *names, int index, int index_index);
 
@@ -123,10 +120,7 @@ int main(int argc, char **argv) {
         }
 
     {
-        for (int i = 0; i < ende + 2; i++) {
-            testbrett[i] = new feldtyp;
-            testspiel[i] = new spielfeld();
-        }
+        init_test_spiel_array();
     }
 
     spielfeld spiel(grundfeld, +1, 0);
@@ -250,72 +244,24 @@ int main(int argc, char **argv) {
             if (command == "go") {
                 t1 = clock();
                 spiel.setStufe(0);
-                //     int devwert = 0;
-                // int f = 0;
+
                 for (int _stopp = 1;; _stopp++) {
                     make_schema(zugstapel[spiel.getStufe()], spiel.n, 0);
                     move_sort_schema();
 
-                    //           if (_stopp == 1)
-                    { wert =  run(_stopp, spiel); }
-                    //    if (_stopp==stopp-4) devwert = wert;
-                    /*     else {
-                              int delta = 25;
-                              int alpha = wert - delta;
-                              int beta = wert + delta;
-
-      loop:
-
-                              if (delta >= 26) {
-                                  wert = bp(spiel, spiel.Farbe, -MAX_WERT, MAX_WERT, 0, _stopp, 1);
-                                  break;
-                              }
-                              wert = bp(spiel, spiel.Farbe, alpha, beta, 0, _stopp, 1);
-
-                /*              if (wert <= alpha) {
-
-                                 // beta = (alpha + beta) / 2;
-                                  alpha = wert - delta;
-                                  delta += delta / 4 + 5;
-                                  goto loop;
-
-                                  //  wert = bp(spiel, spiel.Farbe, alpha, beta, 0, _stopp);
-                              }
-
-                              if (wert >= beta) {
-
-                                //  alpha = (alpha + beta) / 2;
-                                  beta = wert + delta;
-                                  delta += delta / 4 + 5;
-                                  goto loop;
-
-                                  //   wert = bp(spiel, spiel.Farbe, alpha, beta, 0, _stopp);
-                              }
-                              //	if (_stopp>=stopp)break;*/
-
-                    //  if ((_stopp >= stopp))
-                    //    break;
-                    //    if (clock() - t1 > 4500)
-                    //     break;
+                    wert =  run_speaking(_stopp, spiel);
                     if ((clock() - t1 >= 300) && (_stopp >= stopp))
                         break;
-                    //       stopp += 1;  //*/
-                    //      }
                 }
-
 
                 t2 = clock();
                 timeline = (double)(timeline * (zug_nummer - 1) / zug_nummer +
                                     (t2 - t1) / zug_nummer);
                 int spez;
                 denkpaar *zugstapel = new denkpaar[200];
-                /*	for (int j=21;j<99;j++) {
-
-                 deckzone_gegner[j] -= 0.5;
-                 deckzone_ich[j] -= 0.5;}*/
 
                 exit = true;
-                switch (spiel.check_end(zuege)) {
+                switch (spiel.check_end(zuege, 0)) {
                     case MATT: {
                         cout << "Verloren\n";
                         break;
@@ -328,7 +274,7 @@ int main(int argc, char **argv) {
                         cout << "Remis\n";
                         break;
                     }
-                    case SCHACKMATT: {
+                    case SCHACHMATT: {
                         cout << "Gewonnen\n";
                         break;
                     }
@@ -341,23 +287,6 @@ int main(int argc, char **argv) {
                         break;
                     }
                 }
-                cout << "info depth " << stopp << " score cp " << wert/1.5 << " pv " <<
-                     " " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2]
-                     <<"(" << bester_zug[0].bewertung <<")" <<
-                     " " << grundfeld_bezeichnungen[bester_zug[1].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[1].z.pos.pos2]
-                     <<"(" << bester_zug[1].bewertung <<")" <<
-                     " " << grundfeld_bezeichnungen[bester_zug[2].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[2].z.pos.pos2]
-                     <<"(" << bester_zug[2].bewertung<<")" <<
-                     " " << grundfeld_bezeichnungen[bester_zug[3].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[3].z.pos.pos2]
-                     <<"(" << bester_zug[3].bewertung <<")" <<
-                     " " << grundfeld_bezeichnungen[bester_zug[4].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[4].z.pos.pos2]
-                     <<"(" << bester_zug[4].bewertung <<")" <<
-                     " " << grundfeld_bezeichnungen[bester_zug[5].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[5].z.pos.pos2]
-                     <<"(" << bester_zug[5].bewertung <<")" <<
-                     "\n";
-                cout << "bestmove ->" <<bester_zug[0].z.pos.pos1<< "-< "<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
-                     << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";
-
 
                 zug_nummer += 1;
             }
@@ -460,7 +389,7 @@ int main(int argc, char **argv) {
         spiel.realer_zug(bester_zug[0], zuege);
 
         exit = true;
-        switch (spiel.check_end(zuege)) {
+        switch (spiel.check_end(zuege, 0)) {
             case MATT: {
                 cout << "Verloren\n";
                 break;
@@ -474,7 +403,7 @@ int main(int argc, char **argv) {
                 cout << "Remis\n";
                 break;
             }
-            case SCHACKMATT: {
+            case SCHACHMATT: {
                 cout << "Gewonnen/n";
                 break;
             }
@@ -499,8 +428,4 @@ int main(int argc, char **argv) {
 
     spoken.close();
     return 0;
-}
-
-int run(int _stopp, spielfeld &spiel) {
-   return bp(spiel, spiel.Farbe,  -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */1);
 }

@@ -84,8 +84,14 @@ static bool killFlag           = true;
 static const int MAX_WERT      = 99999999;
 
 
-enum howitends      { MATT       = -MAX_WERT, PATT = -1, REMIS = 0, schaach = 1,
-    SCHACKMATT = +MAX_WERT, NORMAL };
+enum howitends      {
+    SCHACHMATT = +MAX_WERT,
+    PATT = -1000,
+    REMIS = -999,
+    NORMAL = 0,
+    BLACK_SCHACHMATT = -MAX_WERT
+};
+
 enum espezial           { NICHTS = 0, SCHACH = 1, UNRUH = 2 };
 enum spiel_status   { Eroeffnung, Mittelspiel, Spaetspiel, Endspiel };
 static const char *spiel_status_namen[] = {
@@ -100,6 +106,22 @@ enum figuren            { // bei disp()
     W_Tr                                                     = 12,
     RAND                                                     = 13
 };
+
+map<int, char> MAP_BW = {{RAND, RAND}, {LEER, LEER},
+                    {S_T, W_T}, {S_Tr, W_Tr}, 
+                    {S_K, W_K}, {S_D, W_D}, 
+                    {S_Kr, W_Kr}, {S_L, W_L}, 
+                    {S_P, W_P}, {S_B, W_B}, 
+                    {S_Bu, W_Bu}, {S_Bp_r, W_Bp_r}, 
+                    {S_Bp_l, W_Bp_l}, {S_Bx, W_Bx},
+                 
+                    {W_T, S_T}, {W_Tr, S_Tr}, 
+                    {W_K, S_K}, {W_D, S_D}, 
+                    {W_Kr, S_Kr}, {W_L, S_L}, 
+                    {W_P, S_P}, {W_B, S_B}, 
+                    {W_Bu, S_Bu}, {W_Bp_r, S_Bp_r}, 
+                    {W_Bp_l, S_Bp_l}, {W_Bx, S_Bx},
+                    };
 
 static const char *figuren_char[] = { // bei disp()
         "tmr", "knr", "kon", "dam", "tum", "laf", "pdf", "bau", "baU", "bar", "bal",

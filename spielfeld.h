@@ -19,7 +19,7 @@
 #include <regex>
 using namespace std;
 
-#include "basis.h"
+#include "intelligence.h"
 
 
 class spielfeld  {
@@ -39,7 +39,7 @@ public:
     inline bool      test_drohung(int feld[],
                                   int farbe,
                                   int pos);
-    inline howitends check_end(vector<string>& _zuege);
+    inline howitends check_end(vector<string> &_zuege);
     inline howitends last_moves();
 
     int n;
@@ -89,10 +89,10 @@ public:
 
     void zug(denkpaar&);
     void realer_zug(denkpaar&, vector<string>& _zuege);
-
     void norm_zug(denkpaar&);
-
     bool schach(int _farbe);
+
+    void switch_feld();
 };
 
 
