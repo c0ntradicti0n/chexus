@@ -261,8 +261,8 @@ int main(int argc, char **argv) {
                 denkpaar *zugstapel = new denkpaar[200];
 
                 exit = true;
-                switch (spiel.check_end(zuege, 0)) {
-                    case MATT: {
+                switch (spiel.check_end(zuege)) {
+                    case BLACK_SCHACHMATT: {
                         cout << "Verloren\n";
                         break;
                     }
@@ -389,8 +389,8 @@ int main(int argc, char **argv) {
         spiel.realer_zug(bester_zug[0], zuege);
 
         exit = true;
-        switch (spiel.check_end(zuege, 0)) {
-            case MATT: {
+        switch (spiel.check_end(zuege)) {
+            case BLACK_SCHACHMATT: {
                 cout << "Verloren\n";
                 break;
             }
