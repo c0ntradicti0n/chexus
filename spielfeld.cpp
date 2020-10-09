@@ -81,7 +81,12 @@ howitends spielfeld::check_end(vector<string> &_zuege) {
 
 
     if (this->test_drohung(Feld[this->getStufe()], 1, this->wking))  {
-        return SCHACHMATT;
+        if (Farbe > 0)  {
+            return BLACK_SCHACHMATT;
+        }
+        else {
+            return SCHACHMATT;
+        }
     }
 
     if (this->test_drohung(Feld[this->getStufe()], -1, this->bking))  {
@@ -96,7 +101,7 @@ howitends spielfeld::check_end(vector<string> &_zuege) {
 
 
 
-    if (bester_zug[0].z.pos.pos1 == 0 && bester_zug[0].z.pos.pos2 == 0)  {
+    //if (bester_zug[0].z.pos.pos1 == 0 && bester_zug[0].z.pos.pos2 == 0)  {
         if (Farbe > 0)  {
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
@@ -115,15 +120,15 @@ howitends spielfeld::check_end(vector<string> &_zuege) {
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
                                    this->bking)) {/*test = 1;*/ return BLACK_SCHACHMATT;}        // verloren
         }
-        if (this->n == 0) {
-            return PATT;
-        }
-        else return NORMAL;
-    }                                                           // moeglich  (was
+
+    //}                                                           // moeglich  (was
     // ist mit REMIS
     // bei
     // gefesselten
-
+    if (this->n == 0) {
+        return PATT;
+    }
+    else return NORMAL;
     if (zuege_wied(_zuege)) return REMIS;
     else return NORMAL;
 }
@@ -346,10 +351,15 @@ inline bool spielfeld::look_richtung_td(const int feld[], const int &farbe, cons
 
         farbvorzeichen = abs(zielfeld) / zielfeld;
 
-        if (farbvorzeichen == farbe) break;
+        //if (farbvorzeichen == farbe)
+        //    break;
 
         if ((zielfeld == W_D * farbe * -1) ||
-            (zielfeld == W_T * farbe * -1) || (zielfeld == W_Tr * farbe * -1))
+            (zielfeld == W_T * farbe * -1) ||
+            (zielfeld == W_Tr * farbe * -1) ||
+            (zielfeld == W_K * farbe * -1)||
+            (zielfeld == W_Kr * farbe * -1)||
+            (zielfeld == W_T * farbe * -1))
             return true;
         else break;
     }
@@ -358,6 +368,7 @@ inline bool spielfeld::look_richtung_td(const int feld[], const int &farbe, cons
 
 inline bool spielfeld::look_richtung_ld(const int feld[], const int &farbe, const int &pos, const int &step)  {
     int zielfeld, farbvorzeichen, i;
+
     for (i = pos + step; 19 < i && i < 100; i += step)  {
         zielfeld = feld[i];
         if (zielfeld == RAND) break;
@@ -608,7 +619,7 @@ int spielfeld::zuggenerator()  {
 
                         if ((zielfeld == -1 * W_K * farbvorzeichen) ||
                             (zielfeld == -1 * W_Kr * farbvorzeichen))        {
-                            spezial = SCHACH; /*test = 1;*/
+                            spezial = SCHACH;
 
                             return 0;
                         }
@@ -618,7 +629,7 @@ int spielfeld::zuggenerator()  {
                         if ((figur == W_Kr) || (figur == W_K)) {
                             if (test_drohung(Feld[Stufe], Farbe, pos1)) {
                                 test = 1;
-
+                                break;
                             }
                             if (test_drohung(Feld[Stufe], Farbe, pos2))  {
                                 test = 1;
@@ -866,7 +877,8 @@ void spielfeld::disp()  {
     cout << "\n";
     int breite = 3;
 
-    cout << COLOR_NAMES[Farbe] << " " << "  >--A--v--B--v--C--v--D--v--E--v--F--v--G--v--H--<\n";
+    cout << COLOR_NAMES[Farbe]
+              << " " << "  >--A--v--B--v--C--v--D--v--E--v--F--v--G--v--H--<\n";
     cout << "      " << "v >-----+-----+-----+-----+-----+-----+-----+-----< v\n" <<
          "      ";
 

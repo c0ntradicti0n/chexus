@@ -31,7 +31,8 @@ int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _sto
 
     spiel.makeZugstapel();
 
-    howitends end = spiel.check_end(*new vector<string>());
+    // Todo partien zuvor
+    howitends end = spiel.check_end(*new vector<string>);
 
     if (end != NORMAL)
         return end;
