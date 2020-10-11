@@ -1,6 +1,8 @@
 #include "intelligence.h"
 #ifndef BEWERTUNG
 #define BEWERTUNG
+static void print_move(ostream& file, zug z);
+
 
 inline double entwicklung(int feld[120], int farbe)    {
     double wertung = 0;
@@ -709,5 +711,41 @@ static int move_sort_schema(int c = 6)  {
     }
     return 0;
 }
+
+
+static bool valid_move(zug z)  {
+    return z.pos.pos1>0 && z.pos.pos1<120 && z.pos.pos2>0 && z.pos.pos2<120;
+}
+static bool valid_figure(zug z, int * feld)  {
+    bool result =
+    feld[z.pos.pos1] != LEER && feld[z.pos.pos1] != RAND &&
+    feld[z.pos.pos2]!=RAND;
+    if (!result)  {
+        cout << "invalid:";
+        print_move(cout, z);
+    }
+    return result;
+}
+
+
+
+static void print_move(ostream& file, zug z)  {
+    if (valid_move(z))
+        file << " " << grundfeld_bezeichnungen[z.pos.pos1] << grundfeld_bezeichnungen[z.pos.pos2];
+    else
+        file << "|";
+}
+
+template< class Ret, class Arg1, class ...Args >
+auto curry(  Ret f(Arg1,Args...), Arg1 arg )
+-> std::function< Ret(Args...) >
+{
+    return [=]( Args ...args ) { return f( arg, args... ); };
+}
+
+static void print_moves(vector<zug> beam, int stufe, ostream& file = cout)  {
+    for_each(beam.begin(), beam.begin() + stufe, [&file](auto y){print_move(file, y);});
+}
+
 
 #endif

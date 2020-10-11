@@ -83,6 +83,7 @@ static const int figurenanzahl = 12; // bei disp()
 static bool killFlag           = true;
 static const int MAX_WERT      = 99999999;
 
+static vector<zug> Beam = vector<zug>(ende, zug());
 
 enum howitends      {
     SCHACHMATT = +MAX_WERT,
@@ -149,7 +150,7 @@ static char buchstaben1[] =       { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
 static char buchstaben2[] =       { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 static char zahlen[]      =       { '1', '2', '3', '4', '5', '6', '7', '8' };
 
-static const char *grundfeld_bezeichnungen[120] = {
+static const string grundfeld_bezeichnungen[120] = {
         // Ausgabe der Felder
         "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND",
         "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND",

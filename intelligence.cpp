@@ -2,32 +2,48 @@
 #include "spielfeld.h"
 #include "bewertung.cpp"
 
-void init_test_spiel_array();
-int run(int _stopp, spielfeld &spiel);
-int run_speaking(int _stopp, spielfeld &spiel);
+
+basic_ostream<char>  * tree_file = &cout;
+
+static void init_test_spiel_array();
+static int run(int _stopp, spielfeld &spiel);
+static int run_speaking(int _stopp, spielfeld &spiel);
 
 
+#ifndef INTELLIGENCE_CPP
+#define INTELLIGENCE_CPP
 
-void init_test_spiel_array() {
+
+static void init_test_spiel_array() {
     for (int i = 0; i < ende + 2; i++) {
         testbrett[i] = new feldtyp;
         testspiel[i] = new spielfeld();
     }
 }
 
-int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _stopp, /*int devwert, */
+static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _stopp, /*int devwert, */
        int NullFlag) {    // Bewertung, Planung
+    if (((stufe + 1 >= _stopp) || (stufe + 1 >= ende))) {
+        int wertung = rand() % 3 - 1;
+
+        wertung += (double) 1.5 * material(Feld[stufe], farbe); //8.75-9		90
+
+        if (alpha < wertung * farbe + 30) {
+            wertung += (double) 1.55 *
+                       entwicklung(Feld[stufe], farbe);        //0.375-0.4		-->160		1.6
+            wertung += (double) 0.1 *
+                       zuganzahl(Feld[stufe], farbe); //0,8;0.076
+        }
+        *tree_file <<"\nw="<< wertung << " a=" << alpha<< " b="<< beta << " S="<< stufe << " F="<< farbe<< "|";
+        print_moves(Beam, stufe, *tree_file);
+        return wertung * farbe;
+    }
 
     spiel.Farbe = farbe;
 
-    double wertung;
+    double wertung = 0;
 
-
-    srand(time(NULL));
-    if(stufe!=spiel.getStufe())
-        cout <<"nicht stufe gleich";
-
-    make_schema(zugstapel[spiel.getStufe()], spiel.n, stufe);
+    //make_schema(zugstapel[stufe], spiel.n, stufe);
 
     spiel.makeZugstapel();
 
@@ -37,93 +53,70 @@ int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _sto
     if (end != NORMAL)
         return end;
 
-    sort(zugstapel[spiel.getStufe()], spiel.n, stufe);
+    sort(zugstapel[stufe], spiel.n, stufe);
     int n = spiel.n;  // Anzahl der Zuege
     int nn = 0;       // Anzahl der vom Schach her machbaren Zuege
 
     for (int i = 0; i < n; i++) {
+        denkpaar *move = &zugstapel[stufe][i];
+        if (!valid_move(move->z)) {
+            cout << "nothing moving";
+            print_move(cout, move->z);
+        }
+        if (!valid_figure(move->z, Feld[stufe])) {
+            cout << "invalid figure on move";
+        }
 
         testspiel[stufe]->copy(spiel);
-        int __stufe = testspiel[stufe]->getStufe();
-        testspiel[stufe]->zug(zugstapel[__stufe][i]);
+        testspiel[stufe]->zug(*move);
 
         __end = spiel.last_moves();
         if (__end == SCHACHMATT) {
             throw "illegal move done, check after move remains";
         }
 
-        aktueller_zug[stufe] = zugstapel[__stufe][i];
-
-        if (((stufe + 1 >= _stopp) || (stufe + 1 >= ende))) {
-
-            wertung = rand() % 3 - 1;
-
-            wertung += (double) 1.5 * material(Feld[__stufe], farbe); //8.75-9		90
-            
-            if (alpha < wertung * farbe + 30) {
-                wertung += (double) 1.55 *
-                           entwicklung(Feld[__stufe], farbe);        //0.375-0.4		-->160		1.6
-                wertung += (double) 0.1 * 
-                           zuganzahl(Feld[__stufe], farbe); //0,8;0.076
-            }
-
-            if (((wertung * farbe > alpha && wertung * -1 * farbe <= beta + 150 - figurenwert / 20) &&
-                 aktueller_zug[stufe].kill && stufe < _stopp + 5)) {
-                wertung = -bp(*testspiel[stufe], farbe * -1, -beta, -alpha, stufe + 1, _stopp, 1);
-            } else {
-                wertung = wertung * (farbe);
-
-                if (farbe == 1) {
-                    wertung -= 50;
-                }
-                bewertet++;;
-            }
-        } else {
+        aktueller_zug[stufe] = zugstapel[stufe][i];
 
 
-            if ((NullFlag == 1) && (_stopp - stufe) > 2) {
-
-                int wertungn = 0;
-
-
-                wertungn = -bp(
-                        *testspiel[stufe], farbe,
-                        -beta, -beta + 1,
-                        stufe + 1, _stopp - 2,
-                        3);
+        wertung = -bp(
+                *testspiel[stufe],
+                farbe * -1,
+                -beta,
+                -alpha,
+                stufe + 1, _stopp,
+                1);
 
 
-                if (wertungn >= beta && abs(beta) != MAX_WERT) {
-                    return beta;
-                }
+        zugstapel[stufe][i].bewertung = wertung;
 
+        if (wertung >= beta) {
+            bester_zug[stufe] = zugstapel[stufe][i];
+            best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
+            best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
 
-            }
-
-
-            if (NullFlag == 1) {
-                if ((_stopp - stufe) > 2) {
-                    wertung = -bp(*testspiel[stufe], -farbe, -beta, -alpha, stufe + 1, _stopp, 4);
-                } else
-                    wertung = -bp(*testspiel[stufe], farbe * -1, -beta, -alpha, stufe + 1, _stopp, 1);
-            } else
-                wertung = -bp(*testspiel[stufe], farbe * -1, -beta, -alpha, stufe + 1, _stopp, 2);
-
-
-            zugstapel[__stufe][i].bewertung = wertung;//}
-
+            *tree_file <<"\nw="<< wertung <<" x=BetaRet" << " a=" << alpha<< " b="<< beta << " S="<< stufe << " F="<< farbe<< "|";
+            print_moves(Beam, stufe, *tree_file);
+            return beta;   //  fail hard beta-cutoff
 
         }
-
-        if (testspiel[stufe]->spezial == SCHACH) {
-
-            testspiel[stufe]->spezial = NICHTS;
-            continue;
+        if (wertung > alpha) {
+            alpha = wertung; // alpha acts like max in MiniMax
+            bester_zug[stufe] = zugstapel[stufe][i];
+            best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
+            best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
+            *tree_file <<"\nw="<< wertung <<" x=AlphaAdjust" << " a=" << alpha<< " b="<< beta << " S="<< stufe << " F="<< farbe<< "|";
+            print_moves(Beam, stufe, *tree_file);
         }
 
-        zugstapel[__stufe][i].bewertung = wertung;
+    }
+    *tree_file <<"\nw="<< wertung <<" x=AlphaRet" << " a=" << alpha<< " b="<< beta << " S="<< stufe << " F="<< farbe<< "|";
+    print_moves(Beam, stufe, *tree_file);
+    return alpha;
+}
 
-        if (stufe == 0 && _stopp == stopp) {
+/*
+
+        if (stufe == 0) {
             cout << ""
                  << grundfeld_bezeichnungen[aktueller_zug[0].z.pos.pos1]
                  << " => " << grundfeld_bezeichnungen[aktueller_zug[0].z.pos.pos2]
@@ -134,17 +127,22 @@ int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _sto
             cout.flush();
         }
         //else { if (stufe == 0) cout << "*" << flush;}
+        if (wertung <= beta) {
+            spiel.nn = nn;
 
-        if (wertung > alpha) {
-
-            bester_zug[stufe] = zugstapel[__stufe][i];
-            best_one[stufe] = zugstapel[__stufe][i]; //Aktueller PV-Zug
-            best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
-
-            if (wertung >= beta) {
-                spiel.nn = nn;
+            if (stufe< 5) {
+                //cout << endl;
+                beta = wertung;
                 return beta;
             }
+        }
+        if (wertung > alpha) {
+
+            bester_zug[stufe] = zugstapel[stufe][i];
+            best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
+            best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
+
+
 
             alpha = wertung;
         }
@@ -152,13 +150,14 @@ int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _sto
     spiel.nn = nn;
     return alpha;
 }
+ */
 
 
 
-int run(int _stopp, spielfeld &spiel) {
-    return bp(spiel, spiel.Farbe,  -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */1);
+static int run(int _stopp, spielfeld &spiel) {
+    return bp(spiel, spiel.Farbe,  -MAX_WERT, +MAX_WERT, 0, _stopp, /*devwert, */1);
 }
-int run_speaking(int _stopp, spielfeld &spiel) {
+static int run_speaking(int _stopp, spielfeld &spiel) {
     int wert =  bp(spiel, spiel.Farbe,  -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */1);
     cout << "info depth " << stopp << " score cp " << wert/1.5 << " pv " <<
          " " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2]
@@ -178,3 +177,5 @@ int run_speaking(int _stopp, spielfeld &spiel) {
          << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";
     return wert;
 }
+
+#endif

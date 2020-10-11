@@ -55,6 +55,8 @@ int main(int argc, char **argv) {
     timeline = 0;
     time_t t1, t2, t0;
 
+    srand(time(NULL));
+
     // Kommandozeilenargumente
 
     while ((c = getopt(argc, argv, "aus:f:")) != -1)

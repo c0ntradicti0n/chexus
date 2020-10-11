@@ -36,8 +36,8 @@ int before_patt_feld[120] =
           RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
           RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
           RAND, LEER, LEER, W_K,  LEER, LEER,  LEER,  LEER,  LEER,   RAND,
-          RAND, LEER, LEER,  LEER, LEER, LEER,  LEER,  LEER,  W_T,   RAND,
-          RAND, LEER, S_K, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
+          RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  W_T,    RAND,
+          RAND, LEER, S_K,  LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND
         };

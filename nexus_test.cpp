@@ -2,6 +2,7 @@
 // Created by stefan on 06.10.20.
 //
 
+#include <iostream>
 
 #include "gtest/gtest.h"
 
@@ -10,10 +11,41 @@
 #include "bewertung.cpp"
 #include "spielfeld.cpp"
 
+string make_move_patt ()  {
+    init_test_spiel_array();
 
-#include <iostream>
+    spielfeld* spiel = new spielfeld(before_patt_feld, eigene_farbe = 1);
+
+    spiel->makeZugstapel();
+
+    cout<<"zugstapel " << spiel->Farbe << endl;
+    spiel->print_zugstapel();
+
+    int wert = run_speaking(5, *spiel);
+    cout << "wert =" << wert << endl;
+    return grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1] + grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2];
+}
+
 
 vector<string> moves_before = *new vector<string>();
+
+TEST(module_name, test_before_patt_stupid_rand_move )  {
+    ofstream * file = new ofstream("moves.tree", ofstream::binary);
+    tree_file = file;
+    string move = make_move_patt();
+    string stupid  = "RANDRAND";
+    file->close();
+    ASSERT_EQ(move != stupid, true);
+}
+
+
+
+TEST(module_name, test_before_patt_stupid_move )  {
+    string move = make_move_patt();
+    string stupid  = "c6d7";
+    ASSERT_EQ(move != stupid, true);
+}
+
 
 // Google Test test cases are created using a C++ preprocessor macro
 // Here, a "test suite" name and a specific "test name" are provided.
@@ -82,7 +114,7 @@ TEST(module_name, test_patt_zuege )  {
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = bp(*spiel, 1,  -MAX_WERT, MAX_WERT, 0, 9, 1);
+    int wert = bp(*spiel, 1,  -MAX_WERT, MAX_WERT, 0, 4, 1);
     ASSERT_EQ(wert, SCHACHMATT);
 }
 
@@ -96,7 +128,7 @@ TEST(module_name, test_before_patt_b )  {
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(10, *spiel);
+    int wert = run_speaking(4, *spiel);
     ASSERT_EQ(wert, BLACK_SCHACHMATT);
 }
 

@@ -12,6 +12,10 @@
 #include <regex>
 using namespace std;
 
+
+#ifndef IO_H
+#define IO_H
+
 #include "intelligence.h"
 #include "common_functions.h"
 
@@ -131,3 +135,4 @@ static void writ(int feld[120], int form = 0)  {
     partie.close();
 }
 
+#endif //IO.H

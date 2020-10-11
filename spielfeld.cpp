@@ -15,7 +15,13 @@
 #include <regex>
 using namespace std;
 
+
+#ifndef SPIELFELD_CPP
+#define SPIELFELD_CPP
+
+
 #include "spielfeld.h"
+#include "io.cpp"
 
 
 void zuege_append(vector<string>& zuege, string _hash)  {
@@ -69,13 +75,12 @@ howitends spielfeld::check_end(vector<string> &_zuege) {
     if (this -> wking == 0)  {
         //disp();
         cout << "He took the white king!\n";
-        //  test = 1;
         return SCHACHMATT;
     }
     if (this -> bking == 0)  {
-        //disp();
         cout << "He took the black king!\n";
-        //  test = 1;
+        print_moves (Beam, Stufe);
+        disp();
         return BLACK_SCHACHMATT;
     }
 
@@ -272,7 +277,9 @@ inline int spielfeld::getStufe()  {
 }
 
 inline void spielfeld::zug(denkpaar& _zug)  {
+    Beam[Stufe] = _zug.z;
     setStufe(Stufe + 1);
+    setFarbe(Farbe * -1);
 
     for (int i = 0; i < 120; i++)  {
         Feld[Stufe][i] = Feld[Stufe - 1][i];
@@ -289,7 +296,6 @@ inline void spielfeld::zug(denkpaar& _zug)  {
         }
     }
 
-    setFarbe(Farbe * -1);
 
     Z = false;
 }
@@ -977,3 +983,5 @@ void spielfeld::write()  {
     partie << "\n";
     partie.close();
 }
+
+#endif
