@@ -67,7 +67,7 @@ bool zuege_wied(vector<string>& _zuege)  {
     }
 }
 
-howitends spielfeld::check_end(vector<string> &_zuege) {
+int spielfeld::check_end(vector<string> &_zuege) {
     find_kings();
     //print_zugstapel();
     //cout << "STUFE::: "<< this ->getStufe() << " w king: "<< this->wking << " b king: " << this->bking;
@@ -75,33 +75,22 @@ howitends spielfeld::check_end(vector<string> &_zuege) {
     if (this -> wking == 0)  {
         //disp();
         cout << "He took the white king!\n";
-        return SCHACHMATT;
+        return LOST * Farbe;
     }
     if (this -> bking == 0)  {
         cout << "He took the black king!\n";
-        print_moves (Beam, Stufe);
         disp();
-        return BLACK_SCHACHMATT;
+        return LOST * Farbe;
     }
 
-
     if (this->test_drohung(Feld[this->getStufe()], 1, this->wking))  {
-        if (Farbe > 0)  {
-            return BLACK_SCHACHMATT;
-        }
-        else {
-            return SCHACHMATT;
-        }
+         return LOST * Farbe;
+
     }
 
     if (this->test_drohung(Feld[this->getStufe()], -1, this->bking))  {
-        //cout << "schwarz hat schach/n";
-        if (Farbe < 0)  {
-            return SCHACHMATT;
-        }
-        else {
-            return BLACK_SCHACHMATT;
-        }
+         return LOST* Farbe;
+
     }
 
 
@@ -110,32 +99,40 @@ howitends spielfeld::check_end(vector<string> &_zuege) {
         if (Farbe > 0)  {
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
-                                   this->wking)) {/*test = 1;*/ return SCHACHMATT;}       // verloren
+                                   this->wking)) {
+                return WON * Farbe;
+            }       // verloren
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
-                                   this->bking)) {/*test = 1;*/ return BLACK_SCHACHMATT;}  // gewonnen
+                                   this->bking)) {
+                return LOST * Farbe;
+            }  // gewonnen
         }
 
 
         if (Farbe < 0)  {
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
-                                   this->wking)) {/*test = 1;*/
-                return SCHACHMATT;}  // gewonnen
+                                   this->wking)) {
+                return LOST * Farbe;
+            }  // gewonnen
 
             if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
-                                   this->bking)) {/*test = 1;*/ return BLACK_SCHACHMATT;}        // verloren
+                                   this->bking)) {
+                return LOST * Farbe;
+            } // verloren
         }
 
     //}                                                           // moeglich  (was
     // ist mit REMIS
     // bei
     // gefesselten
+    if (zuege_wied(_zuege)) return REMIS * Farbe;
+
     if (this->n == 0) {
-        return PATT;
+        return PATT * Farbe;
     }
-    else return NORMAL;
-    if (zuege_wied(_zuege)) return REMIS;
-    else return NORMAL;
+    else return NORMAL * Farbe;
+
 }
 
 int gegner;
@@ -152,7 +149,7 @@ howitends spielfeld::last_moves()  {
             //cout << "weiss hat schach";
 
             /* test =1;*/
-            return SCHACHMATT; // verloren
+            return LOST; // verloren
         }
     }
 
@@ -160,7 +157,7 @@ howitends spielfeld::last_moves()  {
         if (this->test_drohung(Feld[this->getStufe()], -1, this->bking))  {
             //cout << "schwarz hat schach";
             /*test = 1;*/
-            return SCHACHMATT;
+            return WON;
         }
     }
     return NORMAL;
@@ -279,7 +276,6 @@ inline int spielfeld::getStufe()  {
 inline void spielfeld::zug(denkpaar& _zug)  {
     Beam[Stufe] = _zug.z;
     setStufe(Stufe + 1);
-    setFarbe(Farbe * -1);
 
     for (int i = 0; i < 120; i++)  {
         Feld[Stufe][i] = Feld[Stufe - 1][i];
@@ -307,14 +303,10 @@ inline void spielfeld::norm_zug(denkpaar& _zug)  {
     if ((_zug.nw)) {
         int max = _zug.nw;
 
-        for (int j = 0; j < max; j++)    {
+        for (int j = 0; j < max; j++) {
             Feld[0][_zug.verwandelung[j].pos1] = _zug.verwandelung[j].fig;
         }
     }
-    setFarbe(Farbe * -1);
-    Z = false;
-
-
 }
 
 inline void spielfeld::realer_zug(denkpaar& _zug, vector<string>& _zuege)  {
@@ -329,10 +321,9 @@ inline void spielfeld::add_zug(const int & pos1,
                                const bool& _kill,
                                const int & _figur)  {
 
-
-
     zugstapel[Stufe][_n].z.pos.pos1 = pos1;
     zugstapel[Stufe][_n].z.pos.pos2 = pos2;
+    zugstapel[Stufe][_n].z.pos.fig = _figur;
     zugstapel[Stufe][_n].kill       = _kill;
     zugstapel[Stufe][_n].figur      = _figur;
     n++;
@@ -456,8 +447,6 @@ int spielfeld::zuggenerator()  {
     int enp_l, enp_r;
     int ziel, zielfeld;
     int farbvorzeichen, figur;
-
-
 
     int zugnr = 0;
 
@@ -665,7 +654,7 @@ int spielfeld::zuggenerator()  {
                                 add_verwandelung(farbvorzeichen, pos2, W_D, n);
                                 add_zug(pos1, pos2, n, false, figur);
                                 add_verwandelung(farbvorzeichen, pos2, W_P, n);
-                                add_zug(pos1, pos2, n, false, figur);
+                                add_zug(pos1, pos2, n, false, figur *farbvorzeichen);
 
                                 //		break;
                             }
@@ -673,9 +662,9 @@ int spielfeld::zuggenerator()  {
                         if (Farbe < 0)  {
                             if ((21 <= pos2) && (pos2 <= 28))  {
                                 add_verwandelung(farbvorzeichen, pos2, W_D, n);
-                                add_zug(pos1, pos2, n, false, figur);
+                                add_zug(pos1, pos2, n, false, figur *farbvorzeichen);
                                 add_verwandelung(farbvorzeichen, pos2, W_P, n);
-                                add_zug(pos1, pos2, n, false, figur);
+                                add_zug(pos1, pos2, n, false, figur *farbvorzeichen);
 
                                 //		break;
                             }
@@ -732,7 +721,7 @@ int spielfeld::zuggenerator()  {
 
 
 
-                    add_zug(pos1, pos2, n, false, figur);
+                    add_zug(pos1, pos2, n, false, figur *farbvorzeichen);
                 }
             }
         }
@@ -751,7 +740,7 @@ int spielfeld::zuggenerator()  {
                     add_verwandelung(Farbe, 97, W_K,  n);
                     add_verwandelung(Farbe, 96, W_T,  n);
                     add_verwandelung(Farbe, 98, LEER, n);
-                    add_zug(95, 97, n, false, figur);
+                    add_zug(95, 97, n, false, figur *farbvorzeichen);
                 }
             }
 
@@ -765,7 +754,7 @@ int spielfeld::zuggenerator()  {
                     add_verwandelung(Farbe, 93, W_K,  n);
                     add_verwandelung(Farbe, 94, W_T,  n);
                     add_verwandelung(Farbe, 91, LEER, n);
-                    add_zug(95, 93, n, false, figur);
+                    add_zug(95, 93, n, false, figur *farbvorzeichen);
                 }
             }
         } else
@@ -779,7 +768,7 @@ int spielfeld::zuggenerator()  {
                     add_verwandelung(Farbe, 27, W_K,  n);
                     add_verwandelung(Farbe, 26, W_T,  n);
                     add_verwandelung(Farbe, 28, LEER, n);
-                    add_zug(25, 27, n, false, figur);
+                    add_zug(25, 27, n, false, figur *farbvorzeichen);
                 }
             }
 
@@ -793,7 +782,7 @@ int spielfeld::zuggenerator()  {
                     add_verwandelung(Farbe, 23, W_K,  n);
                     add_verwandelung(Farbe, 24, W_T,  n);
                     add_verwandelung(Farbe, 21, LEER, n);
-                    add_zug(25, 23, n, false, figur);
+                    add_zug(25, 23, n, false, figur *farbvorzeichen);
                 }
             }
         }
@@ -829,7 +818,7 @@ int schach_bewegung[15][15] = // Richtung, Weite, wohin[richtung]
         };
 
 inline bool spielfeld::schach(int _farbe)  {
-    /*	int pos1, pos2, figur, farbvorzeichen;
+    /*	int pos1, pos2, farbvorzeichen;
 
 
             for (int i=21; i<=98; i++ )	{  //König finden

@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
 
                 exit = true;
                 switch (spiel.check_end(zuege)) {
-                    case BLACK_SCHACHMATT: {
+                    case LOST: {
                         cout << "Verloren\n";
                         break;
                     }
@@ -276,7 +276,7 @@ int main(int argc, char **argv) {
                         cout << "Remis\n";
                         break;
                     }
-                    case SCHACHMATT: {
+                    case WON: {
                         cout << "Gewonnen\n";
                         break;
                     }
@@ -392,7 +392,7 @@ int main(int argc, char **argv) {
 
         exit = true;
         switch (spiel.check_end(zuege)) {
-            case BLACK_SCHACHMATT: {
+            case LOST: {
                 cout << "Verloren\n";
                 break;
             }
@@ -405,7 +405,7 @@ int main(int argc, char **argv) {
                 cout << "Remis\n";
                 break;
             }
-            case SCHACHMATT: {
+            case WON: {
                 cout << "Gewonnen/n";
                 break;
             }

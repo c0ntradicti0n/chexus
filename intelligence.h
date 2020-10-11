@@ -17,8 +17,9 @@ union zug {
     struct {
         char pos1 : 8;
         char pos2 : 8;
+        char fig  : 8;
     }   pos;
-    int id : 16;
+    int id : 32;
 };
 struct denkpaar {
     zug    z;
@@ -86,12 +87,15 @@ static const int MAX_WERT      = 99999999;
 static vector<zug> Beam = vector<zug>(ende, zug());
 
 enum howitends      {
-    SCHACHMATT = +MAX_WERT,
+    WON = +MAX_WERT,
     PATT = -1000,
     REMIS = -999,
     NORMAL = 0,
-    BLACK_SCHACHMATT = -MAX_WERT
+    LOST = -MAX_WERT
 };
+map<int, string> END_NAMES = {{WON, "w_won"}, {LOST, "w_lost"},{PATT, "w_patt"}, {NORMAL, "normal"},{REMIS, "w_remis"},
+                              {-WON, "b_won"}, {-LOST, "b_lost"},{-PATT, "b_patt"}, {REMIS, "b_remis"}};
+
 
 enum espezial           { NICHTS = 0, SCHACH = 1, UNRUH = 2 };
 enum spiel_status   { Eroeffnung, Mittelspiel, Spaetspiel, Endspiel };
@@ -246,7 +250,7 @@ RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND };
                          RAND,	S_Tr,	LEER,	S_L,	LEER,	S_Kr,	S_L,	LEER,	S_Tr,	RAND,
                          RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
                          RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
-
+*/
    /*                BEWERTUNG                 */
 static int __STARTFELD[120] = // Wei√üer Bauer
         { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
@@ -325,7 +329,7 @@ int __STARTFELDx5[120] = // Schwarzer L√§ufer
   RAND, S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  RAND,
   RAND, S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
-  RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
+  RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };*/
 /*int __STARTFELDx6[120] = // Wei√üer Turm
 { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
@@ -484,7 +488,7 @@ RAND,0,  3,  4,  4,  4,  4,  3,  0,RAND,
 RAND,0,  4,  2,  2,  2,  2,  4,  0,RAND,
 RAND,-5, -5, -7, -5, -5, -7, -5, -5,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
-RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
+RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};*/
 /*double __STARTPUNKTEx6[120] = //T√ºrme
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,

@@ -39,7 +39,7 @@ public:
     inline bool      test_drohung(int feld[],
                                   int farbe,
                                   int pos);
-    inline howitends check_end(vector<string> &_zuege);
+    inline int check_end(vector<string> &_zuege);
     inline howitends last_moves();
 
     int n;

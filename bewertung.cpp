@@ -1,7 +1,7 @@
 #include "intelligence.h"
 #ifndef BEWERTUNG
 #define BEWERTUNG
-static void print_move(ostream& file, zug z);
+static void print_move(ostream& file, zug z, int stufe);
 
 
 inline double entwicklung(int feld[120], int farbe)    {
@@ -716,22 +716,22 @@ static int move_sort_schema(int c = 6)  {
 static bool valid_move(zug z)  {
     return z.pos.pos1>0 && z.pos.pos1<120 && z.pos.pos2>0 && z.pos.pos2<120;
 }
-static bool valid_figure(zug z, int * feld)  {
+static bool valid_figure(zug z, int * feld, int stufe)  {
     bool result =
-    feld[z.pos.pos1] != LEER && feld[z.pos.pos1] != RAND &&
-    feld[z.pos.pos2]!=RAND;
+        feld[z.pos.pos1] != LEER && feld[z.pos.pos1] != RAND &&
+        feld[z.pos.pos2]!=RAND;
     if (!result)  {
         cout << "invalid:";
-        print_move(cout, z);
+        print_move(cout, z, stufe);
     }
     return result;
 }
 
 
 
-static void print_move(ostream& file, zug z)  {
+static void print_move(ostream& file, zug z, int stufe)  {
     if (valid_move(z))
-        file << " " << grundfeld_bezeichnungen[z.pos.pos1] << grundfeld_bezeichnungen[z.pos.pos2];
+        file << " " << figuren_intern[z.pos.fig + figurenanzahl] << grundfeld_bezeichnungen[z.pos.pos1] << grundfeld_bezeichnungen[z.pos.pos2];
     else
         file << "|";
 }
@@ -744,7 +744,7 @@ auto curry(  Ret f(Arg1,Args...), Arg1 arg )
 }
 
 static void print_moves(vector<zug> beam, int stufe, ostream& file = cout)  {
-    for_each(beam.begin(), beam.begin() + stufe, [&file](auto y){print_move(file, y);});
+    for_each(beam.begin(), beam.begin() + stufe, [&file, stufe](auto y){print_move(file, y, stufe);});
 }
 
 

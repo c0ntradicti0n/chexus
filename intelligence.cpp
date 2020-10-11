@@ -10,6 +10,8 @@ static int run(int _stopp, spielfeld &spiel);
 static int run_speaking(int _stopp, spielfeld &spiel);
 
 
+void graph_debug(int farbe, int alpha, double beta, int stufe, double wertung, string x);
+
 #ifndef INTELLIGENCE_CPP
 #define INTELLIGENCE_CPP
 
@@ -23,7 +25,7 @@ static void init_test_spiel_array() {
 
 static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _stopp, /*int devwert, */
        int NullFlag) {    // Bewertung, Planung
-    if (((stufe + 1 >= _stopp) || (stufe + 1 >= ende))) {
+    if (((stufe + 1 > _stopp) || (stufe + 1 >= ende))) {
         int wertung = rand() % 3 - 1;
 
         wertung += (double) 1.5 * material(Feld[stufe], farbe); //8.75-9		90
@@ -34,8 +36,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
             wertung += (double) 0.1 *
                        zuganzahl(Feld[stufe], farbe); //0,8;0.076
         }
-        *tree_file <<"\nw="<< wertung << " a=" << alpha<< " b="<< beta << " S="<< stufe << " F="<< farbe<< "|";
-        print_moves(Beam, stufe, *tree_file);
+        graph_debug(farbe, alpha, beta, stufe, wertung, "");
         return wertung * farbe;
     }
 
@@ -48,10 +49,12 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
     spiel.makeZugstapel();
 
     // Todo partien zuvor
-    howitends end = spiel.check_end(*new vector<string>);
-
-    if (end != NORMAL)
+    int end = spiel.check_end(*new vector<string>);
+    if (end != NORMAL)  {
+        graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
         return end;
+
+    }
 
     sort(zugstapel[stufe], spiel.n, stufe);
     int n = spiel.n;  // Anzahl der Zuege
@@ -61,9 +64,9 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
         denkpaar *move = &zugstapel[stufe][i];
         if (!valid_move(move->z)) {
             cout << "nothing moving";
-            print_move(cout, move->z);
+            print_move(cout, move->z, stufe);
         }
-        if (!valid_figure(move->z, Feld[stufe])) {
+        if (!valid_figure(move->z, Feld[stufe], stufe)) {
             cout << "invalid figure on move";
         }
 
@@ -71,7 +74,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
         testspiel[stufe]->zug(*move);
 
         __end = spiel.last_moves();
-        if (__end == SCHACHMATT) {
+        if (__end == WON) {
             throw "illegal move done, check after move remains";
         }
 
@@ -94,8 +97,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
             best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
             best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
 
-            *tree_file <<"\nw="<< wertung <<" x=BetaRet" << " a=" << alpha<< " b="<< beta << " S="<< stufe << " F="<< farbe<< "|";
-            print_moves(Beam, stufe, *tree_file);
+            graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
             return beta;   //  fail hard beta-cutoff
 
         }
@@ -104,14 +106,20 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
             bester_zug[stufe] = zugstapel[stufe][i];
             best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
             best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
-            *tree_file <<"\nw="<< wertung <<" x=AlphaAdjust" << " a=" << alpha<< " b="<< beta << " S="<< stufe << " F="<< farbe<< "|";
-            print_moves(Beam, stufe, *tree_file);
+            graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaAdjust");
         }
 
     }
-    *tree_file <<"\nw="<< wertung <<" x=AlphaRet" << " a=" << alpha<< " b="<< beta << " S="<< stufe << " F="<< farbe<< "|";
-    print_moves(Beam, stufe, *tree_file);
+    graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
     return alpha;
+}
+
+void graph_debug(int farbe, int alpha, double beta, int stufe, double wertung, string x) {
+    *tree_file
+    << "\nw=" << wertung << " x=" << x
+    << " a=" << alpha << " b=" << beta
+    << " S=" << stufe << " F=" << farbe << "|";
+    print_moves(Beam, stufe, *tree_file);
 }
 
 /*
