@@ -21,12 +21,14 @@ ofstream * init_tree_file()  {
     return file;
 }
 
-string make_move_patt ()  {
+string make_move_patt (bool switch_farbe=false)  {
     init_test_spiel_array();
     ofstream * file = init_tree_file();
 
     spielfeld* spiel = new spielfeld(before_patt_feld, eigene_farbe = 1);
-
+    if (switch_farbe) {
+        spiel->switch_feld();
+    }
     spiel->makeZugstapel();
 
     cout<<"zugstapel " << spiel->Farbe << endl;
@@ -58,6 +60,13 @@ TEST(module_name, test_before_patt_stupid_move )  {
 
     string move = make_move_patt();
     ASSERT_EQ(move[0] != 'c', true);
+}
+
+
+TEST(module_name, test_before_patt_stupid_move_white )  {
+
+    string move = make_move_patt(true);
+    ASSERT_EQ(move[0] != 'f', true);
 }
 
 
