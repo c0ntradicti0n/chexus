@@ -56,7 +56,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
         cout << end;
         if (end >10000)
             int i = 1;
-        return end * -1;
+        return end * farbe;
 
     }
 
@@ -94,7 +94,8 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
                 farbe * -1,
                 -beta,
                 -alpha,
-                stufe + 1, _stopp,
+                stufe + 1,
+                _stopp,
                 1);
 
 
@@ -110,13 +111,16 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
         }
 
         if (wertung >= beta) {
-            bester_zug[stufe] = zugstapel[stufe][i];
-            best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
-            best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
+            //bester_zug[stufe] = zugstapel[stufe][i];
+            //best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
+            //best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
 
             graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
             break;  //  fail hard beta-cutoff
+        }
 
+        if (alpha==WON*farbe*-1)  {
+            break;
         }
 
     }

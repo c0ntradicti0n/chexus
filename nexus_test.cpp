@@ -23,6 +23,7 @@ ofstream * init_tree_file()  {
 
 string make_move_patt ()  {
     init_test_spiel_array();
+    ofstream * file = init_tree_file();
 
     spielfeld* spiel = new spielfeld(before_patt_feld, eigene_farbe = 1);
 
@@ -31,8 +32,9 @@ string make_move_patt ()  {
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(4, *spiel);
+    int wert = run_speaking(6, *spiel);
     cout << "wert =" << wert << endl;
+    file->close();
     return grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1] + grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2];
 }
 
@@ -52,9 +54,9 @@ TEST(module_name, test_before_patt_stupid_rand_move )  {
 
 
 TEST(module_name, test_before_patt_stupid_move )  {
+
     string move = make_move_patt();
-    string stupid  = "c6d7";
-    ASSERT_EQ(move != stupid, true);
+    ASSERT_EQ(move[0] != 'c', true);
 }
 
 
@@ -82,6 +84,8 @@ TEST(module_name, test_patt_is_white_black_move_perspective) {
 TEST(module_name, test_before_patt_w )  {
 
     init_test_spiel_array();
+    ofstream * file = init_tree_file();
+
 
     spielfeld* spiel = new spielfeld(before_patt_feld, eigene_farbe = -1);
     spiel->disp();
@@ -94,6 +98,8 @@ TEST(module_name, test_before_patt_w )  {
     spiel->print_zugstapel();
 
     int wert = run_speaking(8, *spiel);
+    file->close();
+
     ASSERT_EQ(wert, LOST);
 }
 
@@ -135,7 +141,7 @@ TEST(module_name, test_patt_zuege )  {
     init_test_spiel_array();
 
     int farbe = 1;
-    int max_stufe = 10;
+    int max_stufe = 7;
 
     spielfeld* spiel = new spielfeld(patt_feld, eigene_farbe = farbe);
     spiel->makeZugstapel();
