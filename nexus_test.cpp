@@ -108,6 +108,7 @@ TEST(module_name, test_patt_black) {
 }
 
 
+
 TEST(module_name, test_patt_is_black_white_move_perspective) {
     init_test_spiel_array();
 
@@ -118,9 +119,23 @@ TEST(module_name, test_patt_is_black_white_move_perspective) {
     ASSERT_EQ(NORMAL, end);
 }
 
+
+TEST(module_name, test_schach_black) {
+    init_test_spiel_array();
+
+    spielfeld* spiel = new spielfeld(schach_feld, eigene_farbe=-1);
+    denkpaar * z = spiel->makeZugstapel();
+    int end = spiel->check_end(moves_before);
+    std::cout << end << std::endl;
+    ASSERT_EQ(NORMAL, end);
+}
+
+
 TEST(module_name, test_patt_zuege )  {
+    init_test_spiel_array();
+
     int farbe = 1;
-    int max_stufe = 4;
+    int max_stufe = 10;
 
     spielfeld* spiel = new spielfeld(patt_feld, eigene_farbe = farbe);
     spiel->makeZugstapel();
@@ -129,11 +144,11 @@ TEST(module_name, test_patt_zuege )  {
     spiel->print_zugstapel();
 
     ofstream * file = init_tree_file();
-    int wert = bp(*spiel, 1,  -MAX_WERT, MAX_WERT, 0, max_stufe, 1);
+    int wert = bp(*spiel, 1,  -MAX_WERT, +MAX_WERT, 0, max_stufe, 1);
     for (int i=0; i<=15; i++)  {
         Beam[i] = bester_zug[i].z;
     }
-    graph_debug(farbe, 0, 0, max_stufe, wert, "PIVOT");
+    graph_debug(-farbe, 0, 0, max_stufe, wert, "PIVOT");
     file->close();
     ASSERT_EQ(wert, WON);
 }

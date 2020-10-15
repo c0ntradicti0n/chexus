@@ -87,11 +87,11 @@ static const int MAX_WERT      = 99999999;
 static vector<zug> Beam = vector<zug>(ende, zug());
 
 enum howitends      {
-    WON = +MAX_WERT,
+    WON =  + 666666,
     PATT = -1000,
     REMIS = -999,
     NORMAL = 0,
-    LOST = -MAX_WERT
+    LOST = - 666666
 };
 map<int, string> END_NAMES = {{WON, "w_won"}, {LOST, "w_lost"},{PATT, "w_patt"}, {NORMAL, "normal"},{REMIS, "w_remis"},
                               {-WON, "b_won"}, {-LOST, "b_lost"},{-PATT, "b_patt"}, {REMIS, "b_remis"}};

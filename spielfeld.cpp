@@ -83,44 +83,34 @@ int spielfeld::check_end(vector<string> &_zuege) {
         return LOST * Farbe;
     }
 
-    if (this->test_drohung(Feld[this->getStufe()], 1, this->wking))  {
-         return LOST * Farbe;
+    int my_king_pos, op_king_pos;
 
+    if (this->Farbe < 0) {
+        my_king_pos = this->bking;
+        op_king_pos = this->wking;
+    } else {
+        my_king_pos = this->wking;
+        op_king_pos = this->bking;
     }
 
-    if (this->test_drohung(Feld[this->getStufe()], -1, this->bking))  {
-         return LOST* Farbe;
-
+    if (this->test_drohung(Feld[this->getStufe()], this->Farbe, my_king_pos)) {
+        if (this->n == 0) {
+            return LOST * Farbe;
+        }
     }
 
+    if (this->test_drohung(Feld[this->getStufe()], this->Farbe*-1, op_king_pos)) {
+        if (this->n == 0) {
+            //If we cannot make a move and the opposite king is in danger?
+            // So he has made a forbidden move while patt?
 
-
-    //if (bester_zug[0].z.pos.pos1 == 0 && bester_zug[0].z.pos.pos2 == 0)  {
-        if (Farbe > 0)  {
-
-            if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
-                                   this->wking)) {
-                return WON * Farbe;
-            }       // verloren
-
-            if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
-                                   this->bking)) {
-                return LOST * Farbe;
-            }  // gewonnen
+            cout << "can't make a move, but opposite king is in danger";
+            this->disp();
+            this->test_drohung(Feld[this->getStufe()], this->Farbe*-1, op_king_pos);
+            return SCHACH;
+            throw std::runtime_error("can't make a move, but opposite king is in danger");
         }
-
-
-        if (Farbe < 0)  {
-            if (this->test_drohung(Feld[this->getStufe()], this->Farbe * -1,
-                                   this->wking)) {
-                return LOST * Farbe;
-            }  // gewonnen
-
-            if (this->test_drohung(Feld[this->getStufe()], this->Farbe,
-                                   this->bking)) {
-                return LOST * Farbe;
-            } // verloren
-        }
+    }
 
     //}                                                           // moeglich  (was
     // ist mit REMIS
@@ -348,14 +338,9 @@ inline bool spielfeld::look_richtung_td(const int feld[], const int &farbe, cons
 
         farbvorzeichen = abs(zielfeld) / zielfeld;
 
-        //if (farbvorzeichen == farbe)
-        //    break;
-
         if ((zielfeld == W_D * farbe * -1) ||
             (zielfeld == W_T * farbe * -1) ||
             (zielfeld == W_Tr * farbe * -1) ||
-            (zielfeld == W_K * farbe * -1)||
-            (zielfeld == W_Kr * farbe * -1)||
             (zielfeld == W_T * farbe * -1))
             return true;
         else break;
@@ -393,6 +378,7 @@ inline bool spielfeld::test_drohung(int feld[], int farbe, int pos)  {
            look_richtung_td(feld, farbe, pos, -10) ||
            look_richtung_td(feld, farbe, pos,  1) ||
            look_richtung_td(feld, farbe, pos, -1) ||
+
            look_richtung_ld(feld, farbe, pos,  9) ||
            look_richtung_ld(feld, farbe, pos,  -9) ||
            look_richtung_ld(feld, farbe, pos, 11) ||
@@ -412,7 +398,17 @@ inline bool spielfeld::test_drohung(int feld[], int farbe, int pos)  {
             feld[pos + 10 * farbe] == W_K * farbe * -1 ||
             feld[pos + -10 * farbe] == W_K * farbe * -1 ||
             feld[pos + 9 * farbe] == W_K * farbe * -1 ||
-            feld[pos + -9 * farbe] == W_K * farbe * -1 );
+            feld[pos + -9 * farbe] == W_K * farbe * -1 )
+
+            || (feld[pos + 11 * farbe] == W_Kr * farbe * -1 ||
+                feld[pos + -11 * farbe] == W_Kr * farbe * -1 ||
+                feld[pos + 1 * farbe] == W_Kr * farbe * -1 ||
+                feld[pos + -1 * farbe] == W_Kr * farbe * -1 ||
+                feld[pos + 10 * farbe] == W_Kr * farbe * -1 ||
+                feld[pos + -10 * farbe] == W_Kr * farbe * -1 ||
+                feld[pos + 9 * farbe] == W_Kr * farbe * -1 ||
+                feld[pos + -9 * farbe] == W_Kr * farbe * -1 )
+                    ;
 }
 
 inline void spielfeld::find_kings()  {

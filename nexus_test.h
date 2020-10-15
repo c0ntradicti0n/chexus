@@ -12,6 +12,21 @@ class nexus_test {
 
 };
 
+int schach_feld[120] =
+        { RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
+          RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
+          RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
+          RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
+          RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
+          RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
+          RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
+          RAND, LEER, LEER, W_K,  LEER, LEER,  LEER,  LEER,  LEER,   RAND,
+          RAND, S_K,  LEER,  LEER, LEER, LEER,  W_T,   LEER,  LEER,   RAND,
+          RAND, LEER,  LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
+          RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
+          RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND
+        };
+
 int patt_feld[120] =
         { RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,

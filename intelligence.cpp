@@ -37,7 +37,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
                        zuganzahl(Feld[stufe], farbe); //0,8;0.076
         }
         graph_debug(farbe, alpha, beta, stufe, wertung, "");
-        return wertung * farbe;
+        return wertung * farbe *-1;
     }
 
     spiel.Farbe = farbe;
@@ -50,9 +50,13 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
 
     // Todo partien zuvor
     int end = spiel.check_end(*new vector<string>);
-    if (end != NORMAL)  {
+    if (end == WON * farbe, end == LOST * farbe || end == PATT * farbe  || end== REMIS * farbe)  {
         graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
-        return end;
+        spiel.disp();
+        cout << end;
+        if (end >10000)
+            int i = 1;
+        return end * -1;
 
     }
 
@@ -73,9 +77,13 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
         testspiel[stufe]->copy(spiel);
         testspiel[stufe]->zug(*move);
 
-        __end = spiel.last_moves();
-        if (__end == WON) {
-            throw "illegal move done, check after move remains";
+        testspiel[stufe]-> n = -1;
+         int __end = testspiel[stufe]->check_end(*new vector<string>);
+        if (__end == WON*farbe) {
+            cout << "ERROR: illegal move done, check after move remains\n";
+            continue;
+            throw std::runtime_error("illegal move done, check after move remains");
+
         }
 
         aktueller_zug[stufe] = zugstapel[stufe][i];
@@ -92,15 +100,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
 
         zugstapel[stufe][i].bewertung = wertung;
 
-        if (wertung >= beta) {
-            bester_zug[stufe] = zugstapel[stufe][i];
-            best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
-            best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
 
-            graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
-            return beta;   //  fail hard beta-cutoff
-
-        }
         if (wertung > alpha) {
             alpha = wertung; // alpha acts like max in MiniMax
             bester_zug[stufe] = zugstapel[stufe][i];
@@ -109,14 +109,66 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
             graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaAdjust");
         }
 
+        if (wertung >= beta) {
+            bester_zug[stufe] = zugstapel[stufe][i];
+            best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
+            best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
+
+            graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
+            break;  //  fail hard beta-cutoff
+
+        }
+
     }
     graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
+    switch (stufe)  {
+        case 0:
+            {
+                return alpha;
+            }
+        case 1:
+        {
+            return alpha;
+        }
+        case 2:
+        {
+            return alpha;
+        }
+        case 3:
+        {
+            return alpha;
+        }
+        case 4:
+        {
+            return alpha;
+        }
+        case 5:
+        {
+            return alpha;
+        }
+        case 6:
+        {
+            return alpha;
+        }
+        case 7:
+        {
+            return alpha;
+        }
+        case 8:
+        {
+            return alpha;
+        }
+        case 9:
+        {
+            return alpha;
+        }
+    }
     return alpha;
 }
 
 void graph_debug(int farbe, int alpha, double beta, int stufe, double wertung, string x) {
     *tree_file
-    << "\nw=" << wertung << " x=" << x
+    << "\nw="  << setw(  1 )   << wertung << " x=" << x
     << " a=" << alpha << " b=" << beta
     << " S=" << stufe << " F=" << farbe << "|";
     print_moves(Beam, stufe, *tree_file);

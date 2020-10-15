@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pylab as plt
 import networkx as nx
 import pygraphviz
@@ -9,7 +11,10 @@ from networkx.drawing.nx_agraph import graphviz_layout
 from networkx.utils import pairwise
 
 
-
+def make_move_id(i, m, moves_raw):
+    if i>30:
+        return "j_" + m
+    return "".join(moves_raw[:i+1])
 
 
 class VisualTree:
@@ -27,54 +32,57 @@ class VisualTree:
         for line in lines:
             match = self.tree_line.match(line)
             if match:
-                attrstr = match.group(0)
-                moves = [0] + [str(i) + " " + m for i, m in enumerate( self.move_regex.findall(match.group(0)))]
-                attrs = [atrr.split('=') for atrr in self.attr_regex.findall(attrstr)]
+                move_str = match.group(0)
+                moves_raw = self.move_regex.findall(match.group(0))
+                moves = [(0, "here")] + \
+                        [(make_move_id(i,m, moves_raw), m)
+                         for i, m in enumerate(moves_raw) ]
+                attrs = [atrr.split('=') for atrr in self.attr_regex.findall(move_str)]
                 _attrs = {k:v for k,v in attrs}
 
                 f=int (_attrs['F'])
 
-                for i, (a,b) in enumerate(pairwise(moves[::-1])):
+                for i, ((mv_id_a, a),(mv_id_b, b)) in enumerate(pairwise(moves[::-1])):
                     attrs = _attrs
                     attrs['F'] = str(f)
+                    attrs['n'] = i
 
-                    self.G.add_edge(b,a, ** attrs,
+                    self.G.add_edge(mv_id_b , mv_id_a, ** attrs,
                                     width=2,
                                     color='black'
                                     )
 
-
-
                     print (attrs)
                     self.G.add_node(
-                        a,
-                        label = str(a) + ( f"_{attrs['b']}" if (i==len(moves)-1) else " get"),
-                        n=i,
+                        mv_id_a,
+                        label = str(a) + ( f" {attrs['b']}" ),
                         color='black',
                         **attrs
                     )
 
 
-                if (len(moves)) > self.max_stufe:
-                    self.max_stufe = len(moves)
+                    if (len(moves)) > self.max_stufe:
+                        self.max_stufe = len(moves)
 
-                if 'x' in attrs:
-                    self.G.add_edge(
-                        moves[-2], moves[-1], label=f" {attrs['x']}" , **attrs
-                    )
+                    if 'x' in attrs:
+                        self.G.nodes[mv_id_b]['color'] = 'red'
 
-                    if (attrs['x'] == 'PIVOT'):
-                        self.G.edges[a,b]['color'] = 'red'
-                        self.G.edges[a,b]['width'] = 10
-                        self.G.nodes[b]['color'] = 'red'
 
-                f *= -1
+                        if (attrs['x'] == 'PIVOT'):
+                                self.G.edges[mv_id_a,mv_id_b]['color'] = 'red'
+                                self.G.edges[mv_id_a,mv_id_b]['width'] = 10
+                                self.G.nodes[mv_id_b]['color'] = 'red'
+                        else:
+                            self.G.edges[mv_id_a,mv_id_b]['label'] =f" {attrs['x']}"
+
+
+                    f *= -1
 
 
     def __call__(self):
 
         pos = graphviz_layout(self.G, prog="twopi", args="", root=0)
-        plt.figure(figsize=(18, 18))
+        plt.figure(figsize=(28, 28))
 
         labels = nx.get_node_attributes(self.G, 'label')
         """ncolors = [
@@ -87,7 +95,7 @@ class VisualTree:
         node_colors = [self.G[n]['color'] if 'color' in self.G[n] else self.get_color_from_node(n) for n in self.G.nodes() ]
 
 
-        node_size = [20 if 'n' not in a else 5000/(1+(int(a['n'])) **2) for n, a in self.G.nodes(data=True)]
+        node_size = [20 if 'n' not in a else 5000/(10-(int(a['n'])) **2) for n, a in self.G.nodes(data=True)]
         nx.draw(self.G, pos, node_size=node_size, alpha=0.5, labels=labels, edge_color = edge_colors,
                 node_color=node_colors, width=edge_widths, with_labels=True, font_weight='bold', font_size=13)
 
@@ -107,7 +115,12 @@ class VisualTree:
             if int(self.G.nodes[n]['F']) > 0:
                 return "green"
             else:
+                print (self.G.nodes[n]['F'])
+                print (self.G.nodes[n]['n'])
+
                 return "yellow"
+
+            return 'blue'
 
 
 
