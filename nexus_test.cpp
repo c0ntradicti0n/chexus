@@ -35,6 +35,7 @@ string make_move_patt ()  {
     int wert = run_speaking(6, *spiel);
     cout << "wert =" << wert << endl;
     file->close();
+    spiel->disp();
     return grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1] + grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2];
 }
 

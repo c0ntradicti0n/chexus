@@ -52,7 +52,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
     int end = spiel.check_end(*new vector<string>);
     if (end == WON * farbe, end == LOST * farbe || end == PATT * farbe  || end== REMIS * farbe)  {
         graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
-        spiel.disp();
+        //spiel.disp();
         cout << end;
         if (end >10000)
             int i = 1;
