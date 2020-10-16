@@ -298,7 +298,7 @@ int main(int argc, char **argv) {
     // Benutzermodus
 
     do {
-        disp(spiel.to_feld());
+        spiel.disp();
         writ(spiel.to_feld());
 
         if (!((zug_nummer == 1) && (eigene_farbe == 1))) {  // Benutzerzug

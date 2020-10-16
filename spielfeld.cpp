@@ -104,18 +104,14 @@ int spielfeld::check_end(vector<string> &_zuege) {
             //If we cannot make a move and the opposite king is in danger?
             // So he has made a forbidden move while patt?
 
-            cout << "can't make a move, but opposite king is in danger";
-            this->disp();
-            this->test_drohung(Feld[this->getStufe()], this->Farbe*-1, op_king_pos);
-            return SCHACH;
-            throw std::runtime_error("can't make a move, but opposite king is in danger");
+            //cout << "can't make a move, but opposite king is in danger";
+            //this->disp();
+            //this->test_drohung(Feld[this->getStufe()], this->Farbe*-1, op_king_pos);
+            //return SCHACH;
+            //throw std::runtime_error("can't make a move, but opposite king is in danger");
         }
     }
 
-    //}                                                           // moeglich  (was
-    // ist mit REMIS
-    // bei
-    // gefesselten
     if (zuege_wied(_zuege)) return REMIS * Farbe;
 
     if (this->n == 0) {
@@ -302,6 +298,7 @@ inline void spielfeld::norm_zug(denkpaar& _zug)  {
 inline void spielfeld::realer_zug(denkpaar& _zug, vector<string>& _zuege)  {
     zug (_zug);
     zuege_append(_zuege, this->hash());
+    Farbe =  Farbe *-1;
     return;
 }
 
@@ -618,10 +615,6 @@ int spielfeld::zuggenerator()  {
 
 
                         if ((figur == W_Kr) || (figur == W_K)) {
-                            if (test_drohung(Feld[Stufe], Farbe, pos1)) {
-                                test = 1;
-                                break;
-                            }
                             if (test_drohung(Feld[Stufe], Farbe, pos2))  {
                                 test = 1;
                                 break;
@@ -864,6 +857,19 @@ inline bool spielfeld::schach(int _farbe)  {
     return 0;
 }
 
+
+void spielfeld::print_feld_computable()  {
+    cout << "{";
+    for (int i=0; i<120; i++) {
+        cout << Feld[Stufe][i];
+        if (i != 119) {
+            cout << ", ";
+        }
+    }
+    cout << "}"<< "\n";
+}
+
+
 void spielfeld::disp()  {
     cout << "\n";
     int breite = 3;
@@ -885,6 +891,7 @@ void spielfeld::disp()  {
     }
     cout << "  >--A--+--B--+--C--+--D--+--E--+--F--+--G--+--H--< ^\n";
     cout << "\n";
+    print_feld_computable();
 }
 
 void spielfeld::disp_cleanest()  {

@@ -82,6 +82,7 @@ public:
     string    hash();
 
     void      disp();
+    void      print_feld_computable();
     void      disp_cleanest();
     void      write();
     void      print_zugstapel();
@@ -93,6 +94,7 @@ public:
     bool schach(int _farbe);
 
     void switch_feld();
+
 };
 
 

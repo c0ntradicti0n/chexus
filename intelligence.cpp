@@ -28,7 +28,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
     if (((stufe + 1 > _stopp) || (stufe + 1 >= ende))) {
         int wertung = rand() % 3 - 1;
 
-        wertung += (double) 1.5 * material(Feld[stufe], farbe); //8.75-9		90
+        wertung += 10*(double) 1.5 * material(Feld[stufe], farbe); //8.75-9		90
 
         if (alpha < wertung * farbe + 30) {
             wertung += (double) 1.55 *
@@ -36,8 +36,8 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
             wertung += (double) 0.1 *
                        zuganzahl(Feld[stufe], farbe); //0,8;0.076
         }
-        //graph_debug(farbe, alpha, beta, stufe, wertung, "");
-        return wertung * farbe *-1;
+        graph_debug(farbe, alpha, beta, stufe, wertung, "");
+        return wertung * farbe;
     }
 
     spiel.Farbe = farbe;
@@ -50,10 +50,10 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
 
     // Todo partien zuvor
     int end = spiel.check_end(*new vector<string>);
-    if (end == WON * farbe, end == LOST * farbe || end == PATT * farbe  || end== REMIS * farbe)  {
-        //graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
-        //spiel.disp();
-        //cout << end;
+    if (end == WON * farbe || end == LOST * farbe || end == PATT * farbe  || end== REMIS * farbe)  {
+        graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
+        spiel.disp();
+        cout << end;
         if (end >10000)
             int i = 1;
         return end * farbe;
@@ -107,7 +107,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
             bester_zug[stufe] = zugstapel[stufe][i];
             best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
             best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
-            //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaAdjust");
+            graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaAdjust");
         }
 
         if (wertung >= beta) {
@@ -115,7 +115,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
             //best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
             //best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
 
-            //graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
+            graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
             break;  //  fail hard beta-cutoff
         }
 
@@ -124,7 +124,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
         }
 
     }
-    //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
+    graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
     switch (stufe)  {
         case 0:
             {

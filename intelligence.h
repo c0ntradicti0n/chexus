@@ -170,7 +170,7 @@ static const string grundfeld_bezeichnungen[120] = {
         "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND", "RAND",
         "RAND" };
 
-int grundfeld[120] =
+/*int grundfeld[120] =
 { RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
 RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
 RAND, LEER, LEER, LEER, LEER, LEER,  LEER,  LEER,  LEER,   RAND,
@@ -196,7 +196,7 @@ RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND };
   RAND, S_Tr, LEER,  LEER,  LEER,  S_Kr,  S_L,  LEER,   S_Tr,   RAND,
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND };//*/
-/*static int grundfeld[120] =
+static int grundfeld[120] =
         { RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
           RAND, W_Tr, W_P,  W_L,  W_D,  W_Kr,  W_L,   W_P,   W_Tr,   RAND,
@@ -209,7 +209,6 @@ RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND };
           RAND, S_Tr, S_P,  S_L,  S_D,  S_Kr,  S_L,   S_P,   S_Tr,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND }; // */
-
 
 /*
    bool in_array(const std::string &value, const std::vector<string> &array)

@@ -21,26 +21,35 @@ ofstream * init_tree_file()  {
     return file;
 }
 
-string make_move_patt (bool switch_farbe=false)  {
+
+
+string make_move(int * feld, bool switch_farbe=false, int farbe = 1, int stufe=6)  {
     init_test_spiel_array();
     ofstream * file = init_tree_file();
 
-    spielfeld* spiel = new spielfeld(before_patt_feld, eigene_farbe = 1);
+
+    spielfeld* spiel = new spielfeld(feld, farbe);
     if (switch_farbe) {
         spiel->switch_feld();
     }
+    spiel->disp();
     spiel->makeZugstapel();
 
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(6, *spiel);
+    int wert = run_speaking(stufe, *spiel);
     cout << "wert =" << wert << endl;
+    graph_debug(-farbe, 0, 0, stufe, wert, "PIVOT");
+
     file->close();
     spiel->disp();
     return grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1] + grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2];
 }
 
+string make_move_patt (bool switch_farbe=false, stufe=)  {
+    return make_move(before_patt_feld, switch_farbe);
+}
 
 vector<string> moves_before = *new vector<string>();
 
@@ -48,7 +57,7 @@ TEST(module_name, test_before_patt_stupid_rand_move )  {
 
     ofstream * file = init_tree_file();
     tree_file = file;
-    string move = make_move_patt();
+    string move = make_move_patt(false, 5);
     string stupid  = "RANDRAND";
     file->close();
     ASSERT_EQ(move != stupid, true);
@@ -57,16 +66,31 @@ TEST(module_name, test_before_patt_stupid_rand_move )  {
 
 
 TEST(module_name, test_before_patt_stupid_move )  {
-
     string move = make_move_patt();
     ASSERT_EQ(move[0] != 'c', true);
 }
 
 
 TEST(module_name, test_before_patt_stupid_move_white )  {
-
     string move = make_move_patt(true);
     ASSERT_EQ(move[0] != 'f', true);
+}
+
+TEST(module_name, test_schach_abzug_material )  {
+    string move = make_move(feld_abzug_dame_material, false, -1,5);
+    ASSERT_EQ(move[0] != 'f', true);
+}
+
+
+TEST(module_name, test_schach_schach_in_grundfeld )  {
+    string move = make_move(feld_schach_in_grundfeld, false, 1,5);
+    ASSERT_EQ(move == string("e1d1"), true);
+}
+
+
+TEST(module_name, test_schach_schach_in_grundfeld_stufe_4 )  {
+    string move = make_move(feld_schach_in_grundfeld, false, 1,4);
+    ASSERT_EQ(move == string("e1d1"), true);
 }
 
 
