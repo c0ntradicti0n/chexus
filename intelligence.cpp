@@ -23,7 +23,7 @@ static void init_test_spiel_array() {
     }
 }
 
-static int bp(
+static int _bp(
         spielfeld & spiel,
         int farbe,
         int alpha,
@@ -31,7 +31,7 @@ static int bp(
         int stufe,
         int _stopp,
         int level
-) {    // Bewertung, Planung
+) {// Bewertung, Planung
 
     if (((level + 1 > _stopp) || (level + 1 >= ende))) {
         int wertung = rand() % 3 - 1;
@@ -44,7 +44,8 @@ static int bp(
             wertung += (double) 0.1 *
                        zuganzahl(Feld[stufe], farbe); //0,8;0.076
         }
-        graph_debug(farbe, alpha, beta, stufe, wertung, "");
+        //graph_debug(farbe, alpha, beta, stufe, wertung, "");
+        evaluations +=1;
         return wertung * farbe;
     }
 
@@ -59,9 +60,10 @@ static int bp(
     // Todo partien zuvor
     int end = spiel.check_end(*new vector<string>);
     if (end == WON * farbe || end == LOST * farbe || end == PATT * farbe  || end== REMIS * farbe)  {
-        graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
-        spiel.disp();
-        cout << end;
+        //graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
+        //
+        // spiel.disp();
+        //cout << end;
         if (end >10000)
             int i = 1;
         return end * farbe;
@@ -76,11 +78,11 @@ static int bp(
         step =  move->kill ? 1 : 2;
 
         if (!valid_move(move->z)) {
-            cout << "nothing moving";
-            print_move(cout, move->z, stufe);
+            //cout << "nothing moving";
+            //print_move(cout, move->z, stufe);
         }
         if (!valid_figure(move->z, Feld[stufe], stufe)) {
-            cout << "invalid figure on move";
+            //cout << "invalid figure on move";
         }
 
         testspiel[stufe]->copy(spiel);
@@ -89,7 +91,7 @@ static int bp(
         testspiel[stufe]-> n = -1;
          int __end = testspiel[stufe]->check_end(*new vector<string>);
         if (__end == WON*farbe) {
-            cout << "ERROR: illegal move done, check after move remains\n";
+            //cout << "ERROR: illegal move done, check after move remains\n";
             continue;
             throw std::runtime_error("illegal move done, check after move remains");
 
@@ -98,7 +100,7 @@ static int bp(
         aktueller_zug[stufe] = *move;
 
 
-        wertung = -bp(
+        wertung = -_bp(
                 *testspiel[stufe],
                 farbe * -1,
                 -beta,
@@ -116,7 +118,7 @@ static int bp(
             bester_zug[stufe] = zugstapel[stufe][i];
             best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
             best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
-            graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaAdjust");
+            //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaAdjust");
         }
 
         if (wertung >= beta) {
@@ -124,7 +126,7 @@ static int bp(
             //best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
             //best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
 
-            graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
+            //graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
             break;  //  fail hard beta-cutoff
         }
 
@@ -133,7 +135,7 @@ static int bp(
         }
 
     }
-    graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
+    //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
     switch (stufe)  {
         case 0:
             {
@@ -178,6 +180,21 @@ static int bp(
     }
     return alpha;
 }
+
+
+static int bp(
+        spielfeld & spiel,
+        int farbe,
+        int alpha,
+        double beta,
+        int stufe,
+        int _stopp,
+        int level
+) {
+    evaluations = 0;
+    return _bp(spiel, farbe, alpha, beta, stufe, _stopp, level);
+}
+
 
 void graph_debug(int farbe, int alpha, double beta, int stufe, double wertung, string x) {
     *tree_file

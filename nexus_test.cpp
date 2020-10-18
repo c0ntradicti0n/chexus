@@ -40,7 +40,7 @@ string make_move(int * feld, bool switch_farbe=false, int farbe = 1, int level=6
 
     int wert = run_speaking(level, *spiel);
     cout << "wert =" << wert << endl;
-    graph_debug(-farbe, 0, 0, level, wert, "PIVOT");
+    //graph_debug(-farbe, 0, 0, level, wert, "PIVOT");
 
     file->close();
     spiel->disp();
@@ -77,8 +77,16 @@ TEST(module_name, test_before_patt_stupid_move_white )  {
 }
 
 TEST(module_name, test_schach_abzug_material )  {
-    string move = make_move(feld_abzug_dame_material, false, -1,5);
+    string move = make_move(feld_abzug_dame_material, false, -1,0);
     ASSERT_EQ(move[0] != 'f', true);
+}
+
+
+TEST(module_name, test_schach_rochade_koenig_gabel )  {
+    string move = make_move(schach_rochade_koenig_gabel, false, -1,0);
+    ASSERT_EQ(move != "b5e2", true);
+    ASSERT_EQ(move[0] == 'e', true);
+
 }
 
 
@@ -188,7 +196,7 @@ TEST(module_name, test_patt_zuege )  {
     for (int i=0; i<=15; i++)  {
         Beam[i] = bester_zug[i].z;
     }
-    graph_debug(-farbe, 0, 0, max_stufe, wert, "PIVOT");
+    //graph_debug(-farbe, 0, 0, max_stufe, wert, "PIVOT");
     file->close();
     ASSERT_EQ(wert, WON);
 }

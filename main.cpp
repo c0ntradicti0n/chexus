@@ -345,7 +345,7 @@ int main(int argc, char **argv) {
         }
 
 
-        bewertet = 0;
+        evaluations = 0;
         t1 = clock();
 
         spiel.setStufe(0);
@@ -356,16 +356,7 @@ int main(int argc, char **argv) {
             //   if (_stopp == 0)
 
             wert = run(_stopp, spiel);
-            //     if (_stopp == stopp-2) devwert = wert;
-            /*     else {
-                     int alpha = wert - 30;
-                     int beta = wert + 30;
-                     wert = bp(spiel, spiel.Farbe, alpha, beta, 0, _stopp,1 );
-                     if (wert <= alpha || wert >= beta) {
-                         wert = bp(spiel, spiel.Farbe, -MAX_WERT, MAX_WERT, 0, _stopp, 1);
-                     }*/
 
-            //   }
             if ((clock() - t1 >= 300) && (_stopp >= stopp))
                 break;
         }
@@ -383,7 +374,7 @@ int main(int argc, char **argv) {
              << "time " << (double)(t2 - t1) / CLOCKS_PER_SEC << "s, "
              << "average " << (double)(timeline) / CLOCKS_PER_SEC << "s, "
              << "total " << (double)(clock() - t0) / CLOCKS_PER_SEC << "s, "
-             << "evaluations " << bewertet << "\n";
+             << "evaluations " << evaluations << "\n";
 
         cout << "result     " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
              << " => " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";

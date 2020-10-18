@@ -48,7 +48,7 @@ struct feldtyp  {
 };
 
 int eigene_farbe = 1;  // Sicht des Computers --1-0
-int stopp        = 5;  // normale Suchtiefe, wird ver‚Ä∞ndert
+int stopp        = 15;  // normale Suchtiefe, wird ver‚Ä∞ndert
 const int ende   = 15; // maximale Suchtiefe
 int sortiertiefe = 15; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
 //int figurenwert_weiss = 0;
@@ -615,7 +615,7 @@ static denkpaar zugstapel[ende + 2][200];
 static denkpaar best_one[ende + 2];
 static int sort_schema[ende][200];
 static denkpaar sort_schema_bewertung[ende][200];
-static int bewertet;               // MaÔ¨Ç f¬∏r die Partieeinheit
+static int evaluations;               // MaÔ¨Ç f¬∏r die Partieeinheit
 static int timeline;               // Entscheidung Endspiel oder ErÀÜffnung, Einfluss
 // auf Bewertung und Suchtiefe
 static spiel_status partie_status; // Ereoffnung, Mittelspiel....

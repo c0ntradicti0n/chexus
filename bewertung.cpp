@@ -76,6 +76,30 @@ inline double material(int feld[120], int farbe)  {
     return wert;
 }
 
+int i;
+int pos2;
+int figur;
+int real_figur;
+int farbvorzeichen;
+int Attack = 0;
+double schlagzone_ich[120] = {0};
+double schlagzone_gegner[120] = {0};
+double n = 0;
+int n_Dame      = -5;
+int Attack_Dame = 0;
+int zielfeld;
+int zielfigur;
+int n_Turm      = -10;
+int Attack_Turm = 0;
+int richtung;
+int weite;
+int n_Laeufer      = -15;
+int Attack_Laeufer = 0;
+int Attack_Pferd = 0;
+int Attack_Bauer = 0;
+int Attack_Koenig = 0;
+
+
 inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
     // Offizieren und
     // Bauern inclusive
@@ -83,34 +107,27 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
     // Schlagen,
     // bei Bauern jedoch kein Schlagen
     // , was auch unterschiedlich gewichtet werden kann
-    int pos2;
-    int figur;
-    int farbvorzeichen;
-    int Attack = 0;
-    double schlagzone_ich[120] = {0};
-    double schlagzone_gegner[120] = {0};
-    double n = 0;
+
+    Attack = 0;
+    schlagzone_ich[120] = {0};
+    schlagzone_gegner[120] = {0};
+    n = 0;
+    n_Dame      = -5;
+    Attack_Dame = 0;
 
     // disp(feld);
-    for (int i = 21; i <= 98; i++)    {
-        figur = abs(feld[i]);
-
-        if (feld[i] > 0) {
-            farbvorzeichen = +1;
-        } else {
-            farbvorzeichen = -1;
-        }
-
+    for (i = 21; i <= 98; i++)    {
+        real_figur = feld[i];
+        figur = abs(real_figur);
         if ((figur == LEER) || (figur == RAND)) continue;
 
-        if ((figur == W_D)) {
-            int n_Dame      = -5;
-            int Attack_Dame = 0;
+        farbvorzeichen = (real_figur > 0) - (real_figur < 0);
 
+        if ((figur == W_D)) {
             for (int richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
                 for (int weite = 0; weite <= bewegung[figur][1]; weite++)  {
                     pos2 = i + farbvorzeichen * bewegung[figur][2 + richtung] * (weite + 1);
-                    int zielfeld = feld[pos2];
+                    zielfeld = feld[pos2];
 
                     /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
                         {
@@ -120,7 +137,7 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
 
                     if (zielfeld != LEER)  {
-                        int zielfigur = abs(zielfeld);
+                        int zielfigur = (zielfeld > 0) - (zielfeld < 0);
                         if (zielfeld == RAND) // Aus!
                             break;
 
@@ -189,13 +206,13 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
         }
 
         if ((figur == W_T) || (figur == W_Tr)) {
-            int n_Turm      = -10;
-            int Attack_Turm = 0;
+            n_Turm      = -10;
+            Attack_Turm = 0;
 
-            for (int richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
-                for (int weite = 0; weite <= bewegung[figur][1]; weite++)  {
+            for (richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
+                for (weite = 0; weite <= bewegung[figur][1]; weite++)  {
                     pos2 = i + farbvorzeichen * bewegung[figur][2 + richtung] * (weite + 1);
-                    int zielfeld = feld[pos2];
+                    zielfeld = feld[pos2];
 
                     /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
                         {
@@ -205,7 +222,7 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
 
                     if (zielfeld != LEER)  {
-                        int zielfigur = abs(zielfeld);
+                        zielfigur = abs(zielfeld);
 
                         if (zielfeld == RAND) // Aus!
                             break;
@@ -282,13 +299,13 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
         }
 
         if ((figur == W_L)) {
-            int n_Laeufer      = -15;
-            int Attack_Laeufer = 0;
+            n_Laeufer      = -15;
+            Attack_Laeufer = 0;
 
-            for (int richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
-                for (int weite = 0; weite <= bewegung[figur][1]; weite++)  {
+            for (richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
+                for (weite = 0; weite <= bewegung[figur][1]; weite++)  {
                     pos2 = i + farbvorzeichen * bewegung[figur][2 + richtung] * (weite + 1);
-                    int zielfeld = feld[pos2];
+                    zielfeld = feld[pos2];
 
                     /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
                         {
@@ -298,7 +315,7 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
 
                     if (zielfeld != LEER)  {
-                        int zielfigur = abs(zielfeld);
+                        zielfigur = abs(zielfeld);
 
                         if (zielfeld == RAND) // Aus!
                             break;
@@ -393,12 +410,12 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
         }
 
         if ((figur == W_P)) {
-            int Attack_Pferd = 0;
+            Attack_Pferd = 0;
 
-            for (int richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
-                for (int weite = 0; weite <= bewegung[figur][1]; weite++)  {
+            for (richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
+                for (weite = 0; weite <= bewegung[figur][1]; weite++)  {
                     pos2 = i + farbvorzeichen * bewegung[figur][2 + richtung] * (weite + 1);
-                    int zielfeld = feld[pos2];
+                    zielfeld = feld[pos2];
 
                     /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
                         {
@@ -465,12 +482,13 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
         }
 
         if (((figur == W_B) || (figur == W_Bx))) {
-            int Attack_Bauer = 0;
+            Attack_Bauer = 0;
+            Attack_Koenig = 0;
 
-            for (int richtung = 0; richtung <= bewegung[13][0]; richtung++)  {
-                for (int weite = 0; weite <= bewegung[13][1]; weite++)  {
+            for (richtung = 0; richtung <= bewegung[13][0]; richtung++)  {
+                for (weite = 0; weite <= bewegung[13][1]; weite++)  {
                     pos2 = i + farbvorzeichen * bewegung[13][2 + richtung] * (weite + 1);
-                    int zielfeld = feld[pos2];
+                    zielfeld = feld[pos2];
 
                     /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
                         {
@@ -536,14 +554,14 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
         }
 
         if (((figur == W_K) || (figur == W_Kr))) {
-            int Attack_Koenig = 0;
+            Attack_Koenig = 0;
 
             // int KSafety = 0;
 
-            for (int richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
-                for (int weite = 0; weite <= bewegung[figur][1]; weite++)  {
+            for (richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
+                for (weite = 0; weite <= bewegung[figur][1]; weite++)  {
                     pos2 = i + farbvorzeichen * bewegung[figur][2 + richtung] * (weite + 1);
-                    int zielfeld = feld[pos2];
+                    zielfeld = feld[pos2];
 
                     /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
                         {
@@ -553,7 +571,7 @@ inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
 
                     if (zielfeld != LEER)  {
-                        int zielfigur = abs(zielfeld);
+                        zielfigur = abs(zielfeld);
 
                         if (zielfeld == RAND) // Aus!
                             break;

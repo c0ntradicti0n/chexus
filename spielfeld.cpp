@@ -20,6 +20,7 @@ using namespace std;
 #define SPIELFELD_CPP
 
 
+#include "bewertung.cpp"
 #include "spielfeld.h"
 #include "io.cpp"
 
@@ -112,7 +113,8 @@ int spielfeld::check_end(vector<string> &_zuege) {
         }
     }
 
-    if (zuege_wied(_zuege)) return REMIS * Farbe;
+    if (zuege_wied(_zuege))
+        return REMIS * Farbe;
 
     if (this->n == 0) {
         return PATT * Farbe;
@@ -277,8 +279,6 @@ inline void spielfeld::zug(denkpaar& _zug)  {
             Feld[Stufe][_zug.verwandelung[j].pos1] = _zug.verwandelung[j].fig;
         }
     }
-
-
     Z = false;
 }
 
@@ -415,16 +415,15 @@ inline void spielfeld::find_kings()  {
     bking = 0;
     int farbvorzeichen;
     int figur;
+    int feld;
 
     for (int i = 21; i <= 98; i++) {
-
-        figur = (abs(Feld[Stufe][i]));
+        feld = Feld[Stufe][i];
+        figur = abs(feld);
+        farbvorzeichen = (feld > 0) - (feld < 0);
 
         if ((figur == LEER) || (figur == RAND))
             continue;
-
-
-        farbvorzeichen = figur / Feld[Stufe][i];
 
         if ((figur == W_K) || (figur == W_Kr)) {
             if (farbvorzeichen > 0)
@@ -435,33 +434,34 @@ inline void spielfeld::find_kings()  {
     }
 }
 
+
+int pos1;
+int enp_l, enp_r;
+int ziel;
+int zugnr = 0;
+int en_passent_bauer = 0;
+int o;
+int feld;
+
 int spielfeld::zuggenerator()  {
-    int pos1, pos2;
-    int enp_l, enp_r;
-    int ziel, zielfeld;
-    int farbvorzeichen, figur;
-
-    int zugnr = 0;
-
     n = 0; // Variable der Klasse, wenn man es neu deklarieren wuerde,
     // kommt es zu einem seltsamen Fehler in der Zugsortierung,
     // weil n lokal dann 0 bleibt
-    int en_passent_bauer = 0;
+    en_passent_bauer = 0;
     spezial = NICHTS;
     test = 0;
+    feld = 0;
 
-    for (int o = 0; o < 199; o++) zugstapel[Stufe][o].nw = 0;
+    for (o = 0; o < 199; o++) zugstapel[Stufe][o].nw = 0;
 
-    for (int i = 21; i <= 98; i++) {
-        figur = (abs(Feld[Stufe][i]));
-
+    for (i = 21; i <= 98; i++) {
+        feld = Feld[Stufe][i];
+        figur = abs(feld);
+        farbvorzeichen = (feld > 0) - (feld < 0);
 
         if ((figur == LEER) || (figur == RAND))
 
             continue;
-
-        farbvorzeichen = figur / Feld[Stufe][i];
-
 
         pos1           = i;
 
@@ -583,7 +583,7 @@ int spielfeld::zuggenerator()  {
             } //Bauer endet hier
 
             // andere figuren
-            for (int richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
+            for (richtung = 0; richtung <= bewegung[figur][0]; richtung++)  {
                 for (int weite = 0; weite <= bewegung[figur][1]; weite++)  {
                     pos2 =  pos1 + farbvorzeichen * bewegung[figur][2 + richtung] *
                                    (weite + 1);
