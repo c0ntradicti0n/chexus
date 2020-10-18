@@ -23,9 +23,17 @@ static void init_test_spiel_array() {
     }
 }
 
-static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, int _stopp, /*int devwert, */
-       int NullFlag) {    // Bewertung, Planung
-    if (((stufe + 1 > _stopp) || (stufe + 1 >= ende))) {
+static int bp(
+        spielfeld & spiel,
+        int farbe,
+        int alpha,
+        double beta,
+        int stufe,
+        int _stopp,
+        int level
+) {    // Bewertung, Planung
+
+    if (((level + 1 > _stopp) || (level + 1 >= ende))) {
         int wertung = rand() % 3 - 1;
 
         wertung += 10*(double) 1.5 * material(Feld[stufe], farbe); //8.75-9		90
@@ -62,10 +70,11 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
 
     sort(zugstapel[stufe], spiel.n, stufe);
     int n = spiel.n;  // Anzahl der Zuege
-    int nn = 0;       // Anzahl der vom Schach her machbaren Zuege
-
+    int step;
     for (int i = 0; i < n; i++) {
         denkpaar *move = &zugstapel[stufe][i];
+        step =  move->kill ? 1 : 2;
+
         if (!valid_move(move->z)) {
             cout << "nothing moving";
             print_move(cout, move->z, stufe);
@@ -86,7 +95,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
 
         }
 
-        aktueller_zug[stufe] = zugstapel[stufe][i];
+        aktueller_zug[stufe] = *move;
 
 
         wertung = -bp(
@@ -96,7 +105,7 @@ static int bp(spielfeld & spiel, int farbe, int alpha, double beta, int stufe, i
                 -alpha,
                 stufe + 1,
                 _stopp,
-                1);
+                level + step);
 
 
         zugstapel[stufe][i].bewertung = wertung;
@@ -219,10 +228,10 @@ void graph_debug(int farbe, int alpha, double beta, int stufe, double wertung, s
 
 
 static int run(int _stopp, spielfeld &spiel) {
-    return bp(spiel, spiel.Farbe,  -MAX_WERT, +MAX_WERT, 0, _stopp, /*devwert, */1);
+    return bp(spiel, spiel.Farbe,  -MAX_WERT, +MAX_WERT, 0, _stopp, /*devwert, */0);
 }
 static int run_speaking(int _stopp, spielfeld &spiel) {
-    int wert =  bp(spiel, spiel.Farbe,  -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */1);
+    int wert =  bp(spiel, spiel.Farbe,  -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */0);
     cout << "info depth " << stopp << " score cp " << wert/1.5 << " pv " <<
          " " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2]
          <<"(" << bester_zug[0].bewertung <<")" <<

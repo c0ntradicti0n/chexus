@@ -102,6 +102,8 @@ static feldtyp * testbrett[ende+1];
 
 static spielfeld * testspiel[ende + 1];
 
+
+
 static howitends __end = NORMAL;
 
 #endif  // NEXUS_SPIELFELD_H

@@ -23,7 +23,7 @@ ofstream * init_tree_file()  {
 
 
 
-string make_move(int * feld, bool switch_farbe=false, int farbe = 1, int stufe=6)  {
+string make_move(int * feld, bool switch_farbe=false, int farbe = 1, int level=6)  {
     init_test_spiel_array();
     ofstream * file = init_tree_file();
 
@@ -38,17 +38,17 @@ string make_move(int * feld, bool switch_farbe=false, int farbe = 1, int stufe=6
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(stufe, *spiel);
+    int wert = run_speaking(level, *spiel);
     cout << "wert =" << wert << endl;
-    graph_debug(-farbe, 0, 0, stufe, wert, "PIVOT");
+    graph_debug(-farbe, 0, 0, level, wert, "PIVOT");
 
     file->close();
     spiel->disp();
     return grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1] + grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2];
 }
 
-string make_move_patt (bool switch_farbe=false, stufe=)  {
-    return make_move(before_patt_feld, switch_farbe);
+string make_move_patt (bool switch_farbe=false, int level= 5)  {
+    return make_move(before_patt_feld, switch_farbe, 1, level);
 }
 
 vector<string> moves_before = *new vector<string>();
@@ -57,7 +57,7 @@ TEST(module_name, test_before_patt_stupid_rand_move )  {
 
     ofstream * file = init_tree_file();
     tree_file = file;
-    string move = make_move_patt(false, 5);
+    string move = make_move_patt(false, 15);
     string stupid  = "RANDRAND";
     file->close();
     ASSERT_EQ(move != stupid, true);
@@ -131,7 +131,7 @@ TEST(module_name, test_before_patt_w )  {
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(8, *spiel);
+    int wert = run_speaking(15, *spiel);
     file->close();
 
     ASSERT_EQ(wert, LOST);
@@ -175,7 +175,7 @@ TEST(module_name, test_patt_zuege )  {
     init_test_spiel_array();
 
     int farbe = 1;
-    int max_stufe = 7;
+    int max_stufe = 15;
 
     spielfeld* spiel = new spielfeld(patt_feld, eigene_farbe = farbe);
     spiel->makeZugstapel();
@@ -184,7 +184,7 @@ TEST(module_name, test_patt_zuege )  {
     spiel->print_zugstapel();
 
     ofstream * file = init_tree_file();
-    int wert = bp(*spiel, 1,  -MAX_WERT, +MAX_WERT, 0, max_stufe, 1);
+    int wert = bp(*spiel, 1,  -MAX_WERT, +MAX_WERT, 0, max_stufe, 0);
     for (int i=0; i<=15; i++)  {
         Beam[i] = bester_zug[i].z;
     }
@@ -204,7 +204,7 @@ TEST(module_name, test_before_patt_b )  {
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(8, *spiel);
+    int wert = run_speaking(15, *spiel);
     file->close();
     ASSERT_EQ(wert, LOST);
 }
