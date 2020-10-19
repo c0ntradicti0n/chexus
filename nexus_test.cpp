@@ -38,7 +38,7 @@ string make_move(int * feld, bool switch_farbe=false, int farbe = 1, int level=6
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(level, *spiel);
+    int wert = run_speaking(stopp, *spiel);
     cout << "wert =" << wert << endl;
     //graph_debug(-farbe, 0, 0, level, wert, "PIVOT");
 
@@ -85,7 +85,7 @@ TEST(module_name, test_schach_abzug_material )  {
 TEST(module_name, test_schach_rochade_koenig_gabel )  {
     string move = make_move(schach_rochade_koenig_gabel, false, -1,0);
     ASSERT_EQ(move != "b5e2", true);
-    ASSERT_EQ(move[0] == 'e', true);
+    ASSERT_EQ(move[0] == 'h', true);
 
 }
 

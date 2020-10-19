@@ -58,6 +58,7 @@ static int _bp(
     spiel.makeZugstapel();
 
     // Todo partien zuvor
+    //spiel.disp();
     int end = spiel.check_end(*new vector<string>);
     if (end == WON * farbe || end == LOST * farbe || end == PATT * farbe  || end== REMIS * farbe)  {
         //graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
@@ -89,13 +90,7 @@ static int _bp(
         testspiel[stufe]->zug(*move);
 
         testspiel[stufe]-> n = -1;
-         int __end = testspiel[stufe]->check_end(*new vector<string>);
-        if (__end == WON*farbe) {
-            //cout << "ERROR: illegal move done, check after move remains\n";
-            continue;
-            throw std::runtime_error("illegal move done, check after move remains");
 
-        }
 
         aktueller_zug[stufe] = *move;
 
@@ -130,9 +125,7 @@ static int _bp(
             break;  //  fail hard beta-cutoff
         }
 
-        if (alpha==WON*farbe*-1)  {
-            break;
-        }
+
 
     }
     //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");

@@ -48,7 +48,7 @@ struct feldtyp  {
 };
 
 int eigene_farbe = 1;  // Sicht des Computers --1-0
-int stopp        = 15;  // normale Suchtiefe, wird ver‚Ä∞ndert
+int stopp        = 9;  // normale Suchtiefe, wird ver‚Ä∞ndert
 const int ende   = 15; // maximale Suchtiefe
 int sortiertiefe = 15; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
 //int figurenwert_weiss = 0;

@@ -95,22 +95,15 @@ int spielfeld::check_end(vector<string> &_zuege) {
     }
 
     if (this->test_drohung(Feld[this->getStufe()], this->Farbe, my_king_pos)) {
+        // If we have check, we can move
         if (this->n == 0) {
             return LOST * Farbe;
         }
     }
 
     if (this->test_drohung(Feld[this->getStufe()], this->Farbe*-1, op_king_pos)) {
-        if (this->n == 0) {
-            //If we cannot make a move and the opposite king is in danger?
-            // So he has made a forbidden move while patt?
-
-            //cout << "can't make a move, but opposite king is in danger";
-            //this->disp();
-            //this->test_drohung(Feld[this->getStufe()], this->Farbe*-1, op_king_pos);
-            //return SCHACH;
-            //throw std::runtime_error("can't make a move, but opposite king is in danger");
-        }
+        // If we can take the king, we won
+        return WON * Farbe;
     }
 
     if (zuege_wied(_zuege))
@@ -332,8 +325,6 @@ inline bool spielfeld::look_richtung_td(const int feld[], const int &farbe, cons
         zielfeld = feld[i];
         if (zielfeld == RAND) break;
         if (zielfeld == LEER) continue;
-
-        farbvorzeichen = abs(zielfeld) / zielfeld;
 
         if ((zielfeld == W_D * farbe * -1) ||
             (zielfeld == W_T * farbe * -1) ||
@@ -604,21 +595,34 @@ int spielfeld::zuggenerator()  {
                             break;
 
 
+                        if ((figur == W_Kr) || (figur == W_K) ) {
+                            if (test_drohung(Feld[Stufe], Farbe, pos1)) {
+                                test = 1;
+                                cout<<"King in check";
+
+                            }
+                            if (test_drohung(Feld[Stufe], Farbe, pos2))  {
+                                //    test = 1;
+                                cout<<"King can be taken where he goes";
+                                break;
+                            }
+                        }
+
+                        if (figur == W_Kr) {
+                            add_verwandelung(farbvorzeichen, pos2, W_K, n);
+                        } else
+                        if (figur == W_Tr) {
+                            add_verwandelung(farbvorzeichen, pos2, W_T, n);
+                        }
+
+
+
 
                         if ((zielfeld == -1 * W_K * farbvorzeichen) ||
                             (zielfeld == -1 * W_Kr * farbvorzeichen))        {
                             spezial = SCHACH;
 
                             return 0;
-                        }
-
-
-
-                        if ((figur == W_Kr) || (figur == W_K)) {
-                            if (test_drohung(Feld[Stufe], Farbe, pos2))  {
-                                test = 1;
-                                break;
-                            }
                         }
 
                         if (figur == W_Kr) {
@@ -692,13 +696,14 @@ int spielfeld::zuggenerator()  {
                     if ((figur == W_Kr) || (figur == W_K) ) {
                         if (test_drohung(Feld[Stufe], Farbe, pos1)) {
                             test = 1;
+                            cout<<"King in check";
 
                         }
                         if (test_drohung(Feld[Stufe], Farbe, pos2))  {
                             //    test = 1;
+                            cout<<"King can be taken where he goes";
                             break;
                         }
-
                     }
 
                     if (figur == W_Kr) {
