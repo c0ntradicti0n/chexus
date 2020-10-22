@@ -746,7 +746,6 @@ static bool valid_figure(zug z, int * feld, int stufe)  {
 }
 
 
-
 static void print_move(ostream& file, zug z, int stufe)  {
     if (valid_move(z))
         file << " " << figuren_intern[z.pos.fig + figurenanzahl] << grundfeld_bezeichnungen[z.pos.pos1] << grundfeld_bezeichnungen[z.pos.pos2];

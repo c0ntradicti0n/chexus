@@ -89,4 +89,5 @@ static int feld_schach_in_grundfeld[120] =
           RAND, S_Tr, S_P,  S_L,  S_D,  S_Kr,  S_L,   S_P,   S_Tr,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND }; // */
-#endif //NEXUS_NEXUS_TEST_H
+
+          #endif //NEXUS_NEXUS_TEST_H

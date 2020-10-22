@@ -23,7 +23,7 @@ ofstream * init_tree_file()  {
 
 
 
-string make_move(int * feld, bool switch_farbe=false, int farbe = 1, int level=6)  {
+string make_move(int * feld, bool switch_farbe, int farbe, int level)  {
     init_test_spiel_array();
     ofstream * file = init_tree_file();
 
@@ -38,7 +38,7 @@ string make_move(int * feld, bool switch_farbe=false, int farbe = 1, int level=6
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(stopp, *spiel);
+    int wert = run_speaking(9, *spiel);
     cout << "wert =" << wert << endl;
     //graph_debug(-farbe, 0, 0, level, wert, "PIVOT");
 

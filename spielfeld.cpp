@@ -76,12 +76,12 @@ int spielfeld::check_end(vector<string> &_zuege) {
     if (this -> wking == 0)  {
         //disp();
         cout << "He took the white king!\n";
-        return LOST * Farbe;
+        return LOST ;
     }
     if (this -> bking == 0)  {
         cout << "He took the black king!\n";
         disp();
-        return LOST * Farbe;
+        return LOST ;
     }
 
     int my_king_pos, op_king_pos;
@@ -97,20 +97,20 @@ int spielfeld::check_end(vector<string> &_zuege) {
     if (this->test_drohung(Feld[this->getStufe()], this->Farbe, my_king_pos)) {
         // If we have check, we can move
         if (this->n == 0) {
-            return LOST * Farbe;
+            return LOST;
         }
     }
 
     if (this->test_drohung(Feld[this->getStufe()], this->Farbe*-1, op_king_pos)) {
         // If we can take the king, we won
-        return WON * Farbe;
+        return WON;
     }
 
     if (zuege_wied(_zuege))
-        return REMIS * Farbe;
+        return REMIS ;
 
     if (this->n == 0) {
-        return PATT * Farbe;
+        return PATT ;
     }
     else return NORMAL * Farbe;
 
@@ -598,12 +598,12 @@ int spielfeld::zuggenerator()  {
                         if ((figur == W_Kr) || (figur == W_K) ) {
                             if (test_drohung(Feld[Stufe], Farbe, pos1)) {
                                 test = 1;
-                                cout<<"King in check";
+                                cout<<"!";
 
                             }
                             if (test_drohung(Feld[Stufe], Farbe, pos2))  {
                                 //    test = 1;
-                                cout<<"King can be taken where he goes";
+                                cout<<"?";
                                 break;
                             }
                         }
@@ -696,12 +696,12 @@ int spielfeld::zuggenerator()  {
                     if ((figur == W_Kr) || (figur == W_K) ) {
                         if (test_drohung(Feld[Stufe], Farbe, pos1)) {
                             test = 1;
-                            cout<<"King in check";
+                            cout<<"!";
 
                         }
                         if (test_drohung(Feld[Stufe], Farbe, pos2))  {
                             //    test = 1;
-                            cout<<"King can be taken where he goes";
+                            cout<<"?";
                             break;
                         }
                     }

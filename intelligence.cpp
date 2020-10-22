@@ -46,7 +46,7 @@ static int _bp(
         }
         //graph_debug(farbe, alpha, beta, stufe, wertung, "");
         evaluations +=1;
-        return wertung * farbe;
+        return wertung ;
     }
 
     spiel.Farbe = farbe;
@@ -60,14 +60,14 @@ static int _bp(
     // Todo partien zuvor
     //spiel.disp();
     int end = spiel.check_end(*new vector<string>);
-    if (end == WON * farbe || end == LOST * farbe || end == PATT * farbe  || end== REMIS * farbe)  {
+    if (end == WON  || end == LOST  || end == PATT   || end== REMIS )  {
         //graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
         //
         // spiel.disp();
         //cout << end;
         if (end >10000)
             int i = 1;
-        return end * farbe;
+        return end ;
 
     }
 
@@ -125,7 +125,15 @@ static int _bp(
             break;  //  fail hard beta-cutoff
         }
 
-
+        if (stufe==0 && _stopp==stopp) {
+            cout << ""
+                 << grundfeld_bezeichnungen[aktueller_zug[0].z.pos.pos1]
+                 << " => "	<< grundfeld_bezeichnungen[aktueller_zug[0].z.pos.pos2]
+                 << " Bewertung: "
+                 << setw(5) << wertung
+                 <<", Zug-ID "
+                 << setw(6) << aktueller_zug[0].z.id << "\n";
+            cout.flush(); }
 
 
 
@@ -169,6 +177,30 @@ static int _bp(
             return alpha;
         }
         case 9:
+        {
+            return alpha;
+        }
+        case 10:
+        {
+            return alpha;
+        }
+        case 11:
+        {
+            return alpha;
+        }
+        case 12:
+        {
+            return alpha;
+        }
+        case 13:
+        {
+            return alpha;
+        }
+        case 14:
+        {
+            return alpha;
+        }
+        case 15:
         {
             return alpha;
         }
