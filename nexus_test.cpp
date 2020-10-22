@@ -81,6 +81,11 @@ TEST(module_name, test_schach_abzug_material )  {
     ASSERT_EQ(move[0] != 'f', true);
 }
 
+TEST(module_name, test_move_into_check )  {
+    string move = make_move(moves_into_check, false, 1,0);
+    ASSERT_EQ(move[0] != 'e', true);
+}
+
 
 TEST(module_name, test_schach_rochade_koenig_gabel )  {
     string move = make_move(schach_rochade_koenig_gabel, false, -1,0);

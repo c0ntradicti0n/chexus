@@ -36,7 +36,7 @@ static int _bp(
     if (((level + 1 > _stopp) || (level + 1 >= ende))) {
         int wertung = rand() % 3 - 1;
 
-        wertung += 10*(double) 1.5 * material(Feld[stufe], farbe); //8.75-9		90
+        wertung += (double) 1.5 * material(Feld[stufe], farbe); //8.75-9		90
 
         if (alpha < wertung * farbe + 30) {
             wertung += (double) 1.55 *
@@ -124,6 +124,8 @@ static int _bp(
             //graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
             break;  //  fail hard beta-cutoff
         }
+
+
 
 
 

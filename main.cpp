@@ -303,15 +303,14 @@ int main(int argc, char **argv) {
 
         if (!((zug_nummer == 1) && (eigene_farbe == 1))) {  // Benutzerzug
             bool ok = false;
+            spiel.disp();
             do {
                 if (allein) {
                     eigene_farbe *= -1;
                     break;
                 }
-                denkpaar *zugstapel = new denkpaar[200];
                 int spez;
                 int n = spiel.zuggenerator();
-
 
                 cout << "Zug " << zug_nummer << ", von ";
                 pos1 = eingabe();
@@ -328,10 +327,11 @@ int main(int argc, char **argv) {
                 }
 
                 for (int i = 0; i < n; i++) {
-                    if ((zugstapel[i].z.pos.pos1 == pos1) &&
-                        (zugstapel[i].z.pos.pos2 == pos2)) {
+                    zug z = zugstapel[spiel.getStufe()][i].z;
+                    if ((z.pos.pos1 == pos1) &&
+                        z.pos.pos2 == pos2) {
                         ok = true;
-                        spiel.realer_zug(zugstapel[i], zuege);
+                        spiel.realer_zug(zugstapel[spiel.getStufe()][i], zuege);
                         //zuege_append(zuege, spiel.hash());
                         //if (zuege_wied(zuege)) exit = true;
                         spiel.zug_reset();
@@ -340,7 +340,7 @@ int main(int argc, char **argv) {
                 }
                 if (ok == false)
                     cout << "\nUnmoegliche Eingabe, vertippt?\n";
-                delete[] zugstapel;
+
             } while (!ok);
         }
 
