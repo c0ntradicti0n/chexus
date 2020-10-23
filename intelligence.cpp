@@ -46,7 +46,7 @@ static int _bp(
         }
         //graph_debug(farbe, alpha, beta, stufe, wertung, "");
         evaluations +=1;
-        return wertung ;
+        return wertung;
     }
 
     spiel.Farbe = farbe;

@@ -38,7 +38,7 @@ string make_move(int * feld, bool switch_farbe, int farbe, int level)  {
     cout<<"zugstapel " << spiel->Farbe << endl;
     spiel->print_zugstapel();
 
-    int wert = run_speaking(9, *spiel);
+    int wert = run_speaking(11, *spiel);
     cout << "wert =" << wert << endl;
     //graph_debug(-farbe, 0, 0, level, wert, "PIVOT");
 
@@ -157,7 +157,7 @@ TEST(module_name, test_patt_black) {
     denkpaar * z = spiel->makeZugstapel();
     int end = spiel->check_end(moves_before);
     std::cout << end << std::endl;
-    ASSERT_EQ(PATT * -1, end);
+    ASSERT_EQ(PATT, end);
 }
 
 
