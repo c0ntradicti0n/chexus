@@ -10,8 +10,8 @@ using namespace std;
 
 // TYPEN
 struct wandel {
-    int pos1;
-    int fig;
+    char pos1;
+    char fig;
 };
 union zug {
     struct {
@@ -37,32 +37,29 @@ struct feldtyp  {
 };
 
 int eigene_farbe = 1;  // Sicht des Computers --1-0
-char STOPP        = 6;  // normale Suchtiefe
+char STOPP        = 7;  // normale Suchtiefe
 const int ende   = 15; // maximale Suchtiefe
-int sortiertiefe = 15; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
+int sortiertiefe = 199; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
 //int figurenwert_weiss = 0;
 //int figurenwert_schwarz = 0;
 int figurenwert = 0;
 
 int KooIch       = 300;
 static int KooEr        = 50;
-static double AttackIch = 5;
-static double AttackEr  = 6; //HIER
+static float AttackIch = 5;
+static float AttackEr  = 6; //HIER
 static int    DefIch1   = 40;
 static int    DefIch2   = 80;
-static double DefEr     = 17; //
+static float DefEr     = 17; //
 static int    MobDame   = 5; //
-static double AttDame   = 0.11;
+static float AttDame   = 0.11;
 static int    MobTurm   = 8;
-static double AttTurm   = 0.5;
-static double MobLau    = 8;
-static double AttLau    = 0.75;
-static double AttSpr    = 0.75;
-static double AttBau    = 3.5; ////
-static double AttKoe    = 0.4;
-//int Koenigsangriff_Ich = 25;
-//int Koenigsangriff_Er = 25;  //25 Koenigsangriff_Ich
-
+static float AttTurm   = 0.5;
+static float MobLau    = 8;
+static float AttLau    = 0.75;
+static float AttSpr    = 0.75;
+static float AttBau    = 3.5; ////
+static float AttKoe    = 0.4;
 
 enum state { user, uci, gone, position };
 static state status = uci;
@@ -193,7 +190,7 @@ RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND };
   RAND, S_Tr, LEER,  LEER,  LEER,  S_Kr,  S_L,  LEER,   S_Tr,   RAND,
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND };//*/
-static int grundfeld[120] =
+static char grundfeld[120] =
         { RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
           RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,   RAND,
           RAND, W_Tr, W_P,  W_L,  W_D,  W_Kr,  W_L,   W_P,   W_Tr,   RAND,
@@ -233,7 +230,7 @@ static int grundfeld[120] =
    }
  */
 
-/*int grundfeld[120] =
+/*char grundfeld[120] =
    {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
                          RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
                          RAND,	W_Tr,	LEER,	W_L,	W_D,	W_Kr,	W_L,	LEER,	W_Tr,	RAND,
@@ -248,7 +245,7 @@ static int grundfeld[120] =
                          RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
 */
    /*                BEWERTUNG                 */
-static int __STARTFELD[120] = // Wei√üer Bauer
+static char __STARTFELD[120] = // Wei√üer Bauer
         { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, LEER, LEER, LEER, LEER, LEER, LEER, LEER, LEER, RAND,
@@ -261,7 +258,7 @@ static int __STARTFELD[120] = // Wei√üer Bauer
           RAND, LEER, LEER, LEER, LEER, LEER, LEER, LEER, LEER, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-static  int __STARTFELDx[120] = // Schwarzer Bauer
+static  char __STARTFELDx[120] = // Schwarzer Bauer
         { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, LEER, LEER, LEER, LEER, LEER, LEER, LEER, LEER, RAND,
@@ -274,7 +271,7 @@ static  int __STARTFELDx[120] = // Schwarzer Bauer
           RAND, LEER, LEER, LEER, LEER, LEER, LEER, LEER, LEER, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-static int __STARTFELDx2[120] = // Wei√üer Springer
+static char __STARTFELDx2[120] = // Wei√üer Springer
         { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, W_P,  W_P,  W_P,  W_P,  W_P,  W_P,  W_P,  W_P,  RAND,
@@ -287,7 +284,7 @@ static int __STARTFELDx2[120] = // Wei√üer Springer
           RAND, W_P,  W_P,  W_P,  W_P,  W_P,  W_P,  W_P,  W_P,  RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-static int __STARTFELDx3[120] = // Schwarzer Springer
+static char __STARTFELDx3[120] = // Schwarzer Springer
         { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, S_P,  S_P,  S_P,  S_P,  S_P,  S_P,  S_P,  S_P,  RAND,
@@ -300,7 +297,7 @@ static int __STARTFELDx3[120] = // Schwarzer Springer
           RAND, S_P,  S_P,  S_P,  S_P,  S_P,  S_P,  S_P,  S_P,  RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
           RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-/*int __STARTFELDx4[120] = // Wei√üer L√§ufer
+/*char __STARTFELDx4[120] = // Wei√üer L√§ufer
 { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, W_L,  W_L,  W_L,  W_L,  W_L,  W_L,  W_L,  W_L,  RAND,
@@ -313,7 +310,7 @@ static int __STARTFELDx3[120] = // Schwarzer Springer
   RAND, W_L,  W_L,  W_L,  W_L,  W_L,  W_L,  W_L,  W_L,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-int __STARTFELDx5[120] = // Schwarzer L√§ufer
+char __STARTFELDx5[120] = // Schwarzer L√§ufer
 { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  RAND,
@@ -326,7 +323,7 @@ int __STARTFELDx5[120] = // Schwarzer L√§ufer
   RAND, S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  S_L,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };*/
-/*int __STARTFELDx6[120] = // Wei√üer Turm
+/*char __STARTFELDx6[120] = // Wei√üer Turm
 { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, W_T,  W_T,  W_T,  W_T,  W_T,  W_T,  W_T,  W_T,  RAND,
@@ -339,7 +336,7 @@ int __STARTFELDx5[120] = // Schwarzer L√§ufer
   RAND, W_T,  W_T,  W_T,  W_T,  W_T,  W_T,  W_T,  W_T,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-static int __STARTFELDx7[120] = // Schwarzer Turm
+static char __STARTFELDx7[120] = // Schwarzer Turm
 { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, S_T,  S_T,  S_T,  S_T,  S_T,  S_T,  S_T,  S_T,  RAND,
@@ -352,7 +349,7 @@ static int __STARTFELDx7[120] = // Schwarzer Turm
   RAND, S_T,  S_T,  S_T,  S_T,  S_T,  S_T,  S_T,  S_T,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-int __STARTFELDx8[120] = // Wei√üe Dame
+char __STARTFELDx8[120] = // Wei√üe Dame
 { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, W_D,  W_D,  W_D,  W_D,  W_D,  W_D,  W_D,  W_D,  RAND,
@@ -365,7 +362,7 @@ int __STARTFELDx8[120] = // Wei√üe Dame
   RAND, W_D,  W_D,  W_D,  W_D,  W_D,  W_D,  W_D,  W_D,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-int __STARTFELDx9[120] = // Schwarze Dame
+char __STARTFELDx9[120] = // Schwarze Dame
 { RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, S_D,  S_D,  S_D,  S_D,  S_D,  S_D,  S_D,  S_D,  RAND,
@@ -378,7 +375,7 @@ int __STARTFELDx9[120] = // Schwarze Dame
   RAND, S_D,  S_D,  S_D,  S_D,  S_D,  S_D,  S_D,  S_D,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND,
   RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND, RAND };
-static int __STARTFELDx10[120] = // Wei√üer K√∂nig
+static char __STARTFELDx10[120] = // Wei√üer K√∂nig
 { RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,  RAND,
   RAND, W_K,  W_K,  W_K,  W_K,  W_Kr,  W_K,   W_K,   W_K,   RAND,
@@ -391,7 +388,7 @@ static int __STARTFELDx10[120] = // Wei√üer K√∂nig
   RAND, W_K,  W_K,  W_K,  W_K,  W_K,   W_K,   W_K,   W_K,   RAND,
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,  RAND };
-static int __STARTFELDx11[120] = // Schwarzer K√∂nig
+static char __STARTFELDx11[120] = // Schwarzer K√∂nig
 { RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,  RAND,
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,  RAND,
   RAND, S_K,  S_K,  S_K,  S_K,  S_K,   S_K,   S_K,   S_K,   RAND,
@@ -406,7 +403,7 @@ static int __STARTFELDx11[120] = // Schwarzer K√∂nig
   RAND, RAND, RAND, RAND, RAND, RAND,  RAND,  RAND,  RAND,  RAND };//*/
 
 
-static int __STARTPUNKTEx[120] = // Wei√üe bauern
+static char __STARTPUNKTEx[120] = // Wei√üe bauern
         { RAND, RAND,  RAND,  RAND,   RAND,  RAND,  RAND,  RAND, RAND,  RAND,
           RAND, RAND,  RAND,  RAND,   RAND,  RAND,  RAND,  RAND, RAND,  RAND,
           RAND, 0,     0,     0,      0,     0,  	0,     0,    0,     RAND,
@@ -419,7 +416,7 @@ static int __STARTPUNKTEx[120] = // Wei√üe bauern
           RAND, 0,     0,     0,      0,     0,     0,     0,    0,     RAND,
           RAND, RAND,  RAND,  RAND,   RAND,  RAND,  RAND,  RAND, RAND,  RAND,
           RAND, RAND,  RAND,  RAND,   RAND,  RAND,  RAND,  RAND, RAND,  RAND };
-static double __STARTPUNKTE[120] =
+static char __STARTPUNKTE[120] =
         { RAND, RAND, RAND,  RAND,   RAND,  RAND, RAND, RAND,  RAND,   RAND,
           RAND, RAND, RAND,  RAND,   RAND,  RAND, RAND, RAND,  RAND,   RAND,
           RAND, 0,    0,     0,      0,     0,    0,    0,     0,      RAND,
@@ -432,7 +429,7 @@ static double __STARTPUNKTE[120] =
           RAND, 0,    0,     0,      0,     0,    0,    0,     0,      RAND,
           RAND, RAND, RAND,  RAND,   RAND,  RAND, RAND, RAND,  RAND,   RAND,
           RAND, RAND, RAND,  RAND,   RAND,  RAND, RAND, RAND,  RAND,   RAND };
-static double __STARTPUNKTEx2[120] = // Weiße Springer
+static char __STARTPUNKTEx2[120] = // Weiße Springer
         { RAND, RAND, RAND, RAND,  RAND,   RAND,   RAND,    RAND,  RAND,  RAND,
           RAND, RAND, RAND, RAND,  RAND,   RAND,   RAND,    RAND,  RAND,  RAND,
           RAND, -53,  -42,  -32,   -21,    -21,    -32,     -42,   -53,   RAND,
@@ -446,7 +443,7 @@ static double __STARTPUNKTEx2[120] = // Weiße Springer
           RAND, RAND, RAND, RAND,  RAND,   RAND,   RAND,     RAND, RAND,  RAND,
           RAND, RAND, RAND, RAND,  RAND,   RAND,   RAND,     RAND, RAND,  RAND };
 
-static double __STARTPUNKTEx3[120] =
+static char __STARTPUNKTEx3[120] =
         { RAND, RAND, RAND, RAND,  RAND,   RAND,   RAND,     RAND, RAND, RAND,
           RAND, RAND, RAND, RAND,  RAND,   RAND,   RAND,     RAND, RAND, RAND,
           RAND, -53,  -42,  -32,   -21,    -21,    -32,      -42,  -53,  RAND,
@@ -459,7 +456,7 @@ static double __STARTPUNKTEx3[120] =
           RAND, -53,  -42,  -32,   -21,    -21,    -32,      -42,  -53,  RAND,
           RAND, RAND, RAND, RAND,  RAND,   RAND,   RAND,     RAND, RAND, RAND,
           RAND, RAND, RAND, RAND,  RAND,   RAND,   RAND,     RAND, RAND, RAND };
-/*double __STARTPUNKTEx4[120] = //Wei√üe L√§ufer
+/*char __STARTPUNKTEx4[120] = //Wei√üe L√§ufer
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,-5, -5, -7, -5, -5, -7, -5, -5,	RAND,
@@ -472,7 +469,7 @@ RAND,0,  4,  2,  2,  2,  2,  4,  0,RAND,
 RAND,	0,  0,  0,  0,  0,  0,  0,  0,RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
-double __STARTPUNKTEx5[120] =
+char __STARTPUNKTEx5[120] =
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	0,  0,  0,  0,  0,  0,  0,  0,RAND,
@@ -485,7 +482,7 @@ RAND,0,  4,  2,  2,  2,  2,  4,  0,RAND,
 RAND,-5, -5, -7, -5, -5, -7, -5, -5,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};*/
-/*double __STARTPUNKTEx6[120] = //T√ºrme
+/*char __STARTPUNKTEx6[120] = //T√ºrme
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	0,  3,  5,  5,  5,  5,  3,  0,		RAND,
@@ -498,7 +495,7 @@ RAND,	22, 27, 27, 27, 27, 27, 27, 22,RAND,
 RAND,	8, 11, 13, 13, 13, 13, 11,  8,RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
-double __STARTPUNKTEx7[120] =
+char __STARTPUNKTEx7[120] =
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	8, 11, 13, 13, 13, 13, 11,  8,RAND,
@@ -511,7 +508,7 @@ RAND,	-3,  2,  5,  5,  5,  5,  2, -3,RAND,
 RAND,	0,  3,  5,  5,  5,  5,  3,  0,		RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
-double __STARTPUNKTEx8[120] = //Dame
+char __STARTPUNKTEx8[120] = //Dame
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,-10, -5,  0,  0,  0,  0, -5,-10,	RAND,
@@ -524,7 +521,7 @@ RAND,-5,  0,  5,  5,  5,  5,  0, -5,RAND,
 RAND,10, -5,  0,  0,  0,  0, -5,-10,RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
-double __STARTPUNKTEx9[120] =
+char __STARTPUNKTEx9[120] =
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,10, -5,  0,  0,  0,  0, -5,-10,RAND,
@@ -537,7 +534,7 @@ RAND,-5,  0,  5,  5,  5,  5,  0, -5,RAND,
 RAND,-10, -5,  0,  0,  0,  0, -5,-10,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
-static double __STARTPUNKTEx10[120] = //K√∂nig
+static char __STARTPUNKTEx10[120] = //K√∂nig
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	24, 24,  9,  0,  0,  9, 24, 24,		RAND,
@@ -550,7 +547,7 @@ RAND,	-22,-35,-40,-40,-40,-40,-35,-22,RAND,
 RAND,	-22,-35,-40,-40,-40,-40,-35,-22,RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};
-static double __STARTPUNKTEx11[120] =
+static char __STARTPUNKTEx11[120] =
 {RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	-22,-35,-40,-40,-40,-40,-35,-22,RAND,
@@ -564,7 +561,7 @@ RAND,	24, 24,  9,  0,  0,  9, 24, 24,		RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,
 RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND};*/
 
-static double materialwert[15] = // Materialwert
+static float materialwert[15] = // Materialwert
         {
                 0,                      // NIL! 0
                 100,                    // Startbauer 1
@@ -583,7 +580,7 @@ static double materialwert[15] = // Materialwert
 
 
 // Zahlen fuer den Zuggenerator, Sprenklereinstellungen
-static int bewegung[15][15] = // Anzahl, Richtung, Weite, wohin[richtung]
+static char bewegung[15][15] = // Anzahl, Richtung, Weite, wohin[richtung]
         {
                 { 0, 0, 0   },       // -- unsinn, ignorieren --
                 { 0, 1, 10  },       // Bauer vor seinem Start
@@ -603,22 +600,22 @@ static int bewegung[15][15] = // Anzahl, Richtung, Weite, wohin[richtung]
 
 
 // VARIABLEN
-static int zug_nummer;
+static char zug_nummer;
 static denkpaar aktueller_zug[ende];
 static denkpaar bester_zug[ende];
 
 static char Feld[ende + 2][200];
 
-static denkpaar zugstapel[ende + 2][200];
+static denkpaar zugstapel[ende + 2][200]{};
 static denkpaar best_one[ende + 2];
 static int sort_schema[ende][200];
-static denkpaar sort_schema_bewertung[ende][200];
+static denkpaar sort_schema_bewertung[ende][200]{};
 static int evaluations;               // MaÔ¨Ç f¬∏r die Partieeinheit
 static int timeline;               // Entscheidung Endspiel oder ErÀÜffnung, Einfluss
 // auf Bewertung und Suchtiefe
 static spiel_status partie_status; // Ereoffnung, Mittelspiel....
-static double				  kingzone_ich[120];
-static double				  kingzone_gegner[120];
+static float				  kingzone_ich[120];
+static float				  kingzone_gegner[120];
 // double					OpenLines[8] =
 // {1,1,1,1,1,1,1,1};
 

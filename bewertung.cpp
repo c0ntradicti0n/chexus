@@ -3,21 +3,19 @@
 #define BEWERTUNG
 static void print_move(ostream& file, zug z, int stufe);
 
+int wertung = 0;
+char    dieses_feld;
 
-inline double entwicklung(char feld[120], int farbe)    {
-    double wertung = 0;
-    int    dieses_feld;
+inline float entwicklung(char * &feld, int &farbe)    {
+    wertung = 0;
 
-    for (int i = 21; i <= 98; i++)  {
-        //dieses_feld = feld[i];
-
-        if (feld[i] == RAND || abs(feld[i])>6) continue;
-
-        if (feld[i] == __STARTFELD[i]) wertung += 2* __STARTPUNKTE[i];        // -kingzone_ich[i]*10;	//4.1
-        if (feld[i] == __STARTFELDx[i]) wertung -= 2 * __STARTPUNKTEx[i];                                    // -kingzone_gegner[i]*10;//-kingzone_ich[i]*10;	//4.1
+    for ( dieses_feld = 21; dieses_feld <= 98; dieses_feld++)  {
+        if (feld[dieses_feld] == RAND || abs(feld[dieses_feld])>6) continue;
+        if (feld[dieses_feld] == __STARTFELD[dieses_feld]) wertung += 2* __STARTPUNKTE[dieses_feld];        // -kdieses_feldngzone_ich[i]*10;	//4.1
+        if (feld[dieses_feld] == __STARTFELDx[dieses_feld]) wertung -= 2 * __STARTPUNKTEx[dieses_feld];                                    // -kingzone_gegner[i]*10;//-kingzone_ich[i]*10;	//4.1
         //	else wertung -= 1 * __STARTPUNKTEx[i];}//-kingzone_gegner[i]*10;*/
-        if (feld[i] == __STARTFELDx2[i]) wertung +=  __STARTPUNKTEx2[i];  // +kingzone_ich[i]*10;	//1.17
-        if (feld[i] == __STARTFELDx3[i]) wertung -=  __STARTPUNKTEx3[i];  // -kingzone_gegner[i]*10;
+        if (feld[dieses_feld] == __STARTFELDx2[dieses_feld]) wertung +=  __STARTPUNKTEx2[dieses_feld];  // +kingzone_ich[i]*10;	//1.17
+        if (feld[dieses_feld] == __STARTFELDx3[dieses_feld]) wertung -=  __STARTPUNKTEx3[dieses_feld];  // -kingzone_gegner[i]*10;
         //REST PSQ
 /*    if (feld[i] == __STARTFELDx4[i]) wertung += 0.55* __STARTPUNKTEx4[i];  // +kingzone_ich[i]*10;	//1.17
     if (feld[i] == __STARTFELDx5[i]) wertung -=  0.55* __STARTPUNKTEx5[i];//*/
@@ -33,7 +31,7 @@ inline double entwicklung(char feld[120], int farbe)    {
 }
 
 
-inline double material(char feld[120], int farbe)  {
+inline float material(char * &feld, int & farbe)  {
     double wert = 0;
     int    figur;
     for(int j=21; j<99; ++j) {kingzone_gegner[j] = 0;kingzone_ich[j] = 0;}
@@ -77,14 +75,14 @@ inline double material(char feld[120], int farbe)  {
 }
 
 int i;
-int pos2;
+char pos2;
 int figur;
 int real_figur;
 int farbvorzeichen;
 int Attack = 0;
-double schlagzone_ich[120] = {0};
-double schlagzone_gegner[120] = {0};
-double n = 0;
+char schlagzone_ich[120] = {0};
+char schlagzone_gegner[120] = {0};
+int n = 0;
 int n_Dame      = -5;
 int Attack_Dame = 0;
 int zielfeld;
@@ -118,9 +116,11 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
     // disp(feld);
     for (i = 21; i <= 98; i++)    {
         real_figur = feld[i];
-        figur = abs(real_figur);
-        if ((figur == LEER) || (figur == RAND)) continue;
 
+        if ((real_figur == LEER) || (real_figur == RAND))
+            continue;
+
+        figur = abs(real_figur);
         farbvorzeichen = (real_figur > 0) - (real_figur < 0);
 
         if ((figur == W_D)) {
@@ -129,40 +129,34 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                     pos2 = i + farbvorzeichen * bewegung[figur][2 + richtung] * (weite + 1);
                     zielfeld = feld[pos2];
 
-                    /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
-                        {
-                       for (int weite = 0; weite <= bewegung[W_K][1]; weite++)  {
-                       pos2 = i + farbvorzeichen * bewegung[W_K][2+richtung] * (weite+1);
-                       int zielfeldk = feld[pos2];
-                       if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
-
                     if (zielfeld != LEER)  {
-                        int zielfigur = (zielfeld > 0) - (zielfeld < 0);
                         if (zielfeld == RAND) // Aus!
                             break;
-
-                        /*   if (abs(zielfeld) == W_K)
-                                break;*/
+                        zielfigur = (zielfeld > 0) - (zielfeld < 0);
 
                         if (farbvorzeichen != _eigene_farbe)  {
                             if (zielfeld / _eigene_farbe > 0) {                // Gegner greift meine Figur an
                                 if (schlagzone_gegner[pos2] != 1) schlagzone_gegner[pos2] = 1;
                                 else Attack_Dame += KooIch; n_Dame = n_Dame + 1; // 12
 
-                                if ((n_Dame > 8) && (n_Dame < 10)) n_Dame += 0.5;
+                                if ((n_Dame > 8) && (n_Dame < 10))
+                                    n_Dame += 0.5;
 
                                 Attack_Dame +=
-                                        (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) * AttackIch;
+                                        (zielfigur * materialwert[zielfigur] - 40) * AttackIch;
                             }
                             else { Attack_Dame += DefIch1;
-
-                                if (abs(zielfeld) < 6) Attack_Dame -= DefIch2; } // Gegner
+                                if (zielfigur < 6)
+                                    Attack_Dame -= DefIch2;
+                            }
+                            // Gegner
                             // deckt
                             // seine
                             // Figuren
                             //    1
                         } else  {
-                            if (zielfeld / _eigene_farbe < 0) {                     // Ich
+                            if (zielfeld / _eigene_farbe < 0) {
+                                // Ich
                                 // greife
                                 // Gegner
                                 // an
@@ -174,12 +168,12 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 if ((n_Dame > 8) && (n_Dame < 10)) n_Dame += 0.5;
 
                                 if (zielfigur == W_K || zielfigur == W_Kr) continue;
-                                Attack_Dame += (abs(zielfeld) * materialwert[abs(zielfeld)]) /
+                                Attack_Dame += (zielfigur * materialwert[zielfigur]) /
                                                AttackEr;
                             }
-                            else  if (abs(zielfeld) <
+                            else  if (zielfigur <
                                       10) Attack_Dame +=
-                                                  (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) / DefEr;
+                                                  (zielfigur * materialwert[zielfigur] - 40) / DefEr;
                         } // Ich decke meine Figuren
                         break;
                     }
@@ -199,10 +193,13 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                         if ((n_Dame > 8) && (n_Dame < 10)) n_Dame += 0.5;
                     }
                 }
-            } n_Dame    *= farbvorzeichen;
+            }
+            n_Dame      *= farbvorzeichen;
             Attack_Dame *= farbvorzeichen;
             //  cout << MobDame * n_Dame + AttDame * Attack_Dame << "\n";
             n           += MobDame * n_Dame + AttDame * Attack_Dame;
+
+            continue;
         }
 
         if ((figur == W_T) || (figur == W_Tr)) {
@@ -214,21 +211,12 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                     pos2 = i + farbvorzeichen * bewegung[figur][2 + richtung] * (weite + 1);
                     zielfeld = feld[pos2];
 
-                    /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
-                        {
-                       for (int weite = 0; weite <= bewegung[W_K][1]; weite++)  {
-                       pos2 = i + farbvorzeichen * bewegung[W_K][2+richtung] * (weite+1);
-                       int zielfeldk = feld[pos2];
-                       if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
-
                     if (zielfeld != LEER)  {
-                        zielfigur = abs(zielfeld);
-
                         if (zielfeld == RAND) // Aus!
                             break;
 
-                        /*   if (abs(zielfeld) == W_K)
-                                break;*/
+                        zielfigur = abs(zielfeld);
+
 
                         if (farbvorzeichen != _eigene_farbe)  {
                             if (zielfeld / _eigene_farbe > 0) { // Gegner greift meine Figur
@@ -242,17 +230,20 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 if ((n_Turm > 10) && (n_Turm < 14)) n_Turm += 1;
 
                                 Attack_Turm +=
-                                        (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) * AttackIch;
+                                        (zielfigur * materialwert[zielfigur] - 40) * AttackIch;
                             }
                             else { Attack_Turm += DefIch1;
 
-                                if (abs(zielfeld) < 6) Attack_Turm -= DefIch2; } // Gegner
+                                if (zielfigur < 6) Attack_Turm -= DefIch2;
+                            }
+                            // Gegner
                             // deckt
                             // seine
                             // Figuren
                             //    1
                         } else  {
-                            if (zielfeld / _eigene_farbe < 0) {                     // Ich
+                            if (zielfeld / _eigene_farbe < 0) {
+                                // Ich
                                 // greife
                                 // Gegner
                                 // an
@@ -266,12 +257,12 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 if ((n_Turm > 10) && (n_Turm < 14)) n_Turm += 1;
 
                                 if (zielfigur == W_K || zielfigur == W_Kr) continue;
-                                Attack_Turm += (abs(zielfeld) * materialwert[abs(zielfeld)]) /
+                                Attack_Turm += (zielfigur * materialwert[zielfigur]) /
                                                AttackEr;
                             }
-                            else  if (abs(zielfeld) <
+                            else  if (zielfigur <
                                       10) Attack_Turm +=
-                                                  (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) / DefEr;
+                                                  (zielfigur * materialwert[zielfigur] - 40) / DefEr;
                         } // Ich decke meine Figuren
                         break;
                     }
@@ -294,11 +285,15 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                         if ((n_Turm > 10) && (n_Turm < 14)) n_Turm += 1;
                     }
                 }
-            } n_Turm *= farbvorzeichen; Attack_Turm *= farbvorzeichen;
+            }
+            n_Turm   *= farbvorzeichen; Attack_Turm *= farbvorzeichen;
             n        += MobTurm * n_Turm + AttTurm * Attack_Turm;
+
+            continue;
+
         }
 
-        if ((figur == W_L)) {
+        if (figur == W_L) {
             n_Laeufer      = -15;
             Attack_Laeufer = 0;
 
@@ -307,44 +302,42 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                     pos2 = i + farbvorzeichen * bewegung[figur][2 + richtung] * (weite + 1);
                     zielfeld = feld[pos2];
 
-                    /*    for (int richtung = 0; richtung <= bewegung[W_K][0]; richtung++)
-                        {
-                       for (int weite = 0; weite <= bewegung[W_K][1]; weite++)  {
-                       pos2 = i + farbvorzeichen * bewegung[W_K][2+richtung] * (weite+1);
-                       int zielfeldk = feld[pos2];
-                       if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
-
                     if (zielfeld != LEER)  {
                         zielfigur = abs(zielfeld);
 
                         if (zielfeld == RAND) // Aus!
                             break;
 
-                        /*   if (abs(zielfeld) == W_K)
-                            break;*/
 
                         if (farbvorzeichen != _eigene_farbe)  {
                             if (zielfeld / _eigene_farbe > 0) { // Gegner greift meine Figur
                                 // an
-                                if (schlagzone_gegner[pos2] != 1) schlagzone_gegner[pos2] = 1;
-                                else Attack_Laeufer += KooIch;
+                                if (schlagzone_gegner[pos2] != 1)
+                                    schlagzone_gegner[pos2] = 1;
+                                else
+                                    Attack_Laeufer += KooIch;
 
-                                if (n_Laeufer == -15) n_Laeufer += 5;  // 12
+                                if (n_Laeufer == -15)
+                                    n_Laeufer += 5;  // 12
 
-                                if ((n_Laeufer > -11) && (n_Laeufer < 10)) n_Laeufer += 4;
+                                if ((n_Laeufer > -11) && (n_Laeufer < 10))
+                                    n_Laeufer += 4;
 
-                                if ((n_Laeufer > 9) && (n_Laeufer < 16)) n_Laeufer += 3;
+                                if ((n_Laeufer > 9) && (n_Laeufer < 16))
+                                    n_Laeufer += 3;
 
-                                if ((n_Laeufer > 15) && (n_Laeufer < 22)) n_Laeufer += 2;
+                                if ((n_Laeufer > 15) && (n_Laeufer < 22))
+                                    n_Laeufer += 2;
 
-                                if (n_Laeufer > 21) n_Laeufer += 1;
+                                if (n_Laeufer > 21)
+                                    n_Laeufer += 1;
 
                                 Attack_Laeufer +=
-                                        (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) * AttackIch;
+                                        (zielfigur * materialwert[zielfigur] - 40) * AttackIch;
                             }
                             else { Attack_Laeufer += DefIch1;
 
-                                if (abs(zielfeld) < 6) Attack_Laeufer -= DefIch2; } // Gegner
+                                if (zielfigur < 6) Attack_Laeufer -= DefIch2; } // Gegner
                             // deckt
                             // seine
                             // Figuren
@@ -368,12 +361,12 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 if (n_Laeufer > 21) n_Laeufer += 1;
 
                                 if (zielfigur == W_K || zielfigur == W_Kr) continue;
-                                Attack_Laeufer += (abs(zielfeld) * materialwert[abs(zielfeld)]) /
+                                Attack_Laeufer += (zielfigur * materialwert[zielfigur]) /
                                                   AttackEr;
                             }
-                            else  if (abs(zielfeld) <
+                            else  if (zielfigur <
                                       10) Attack_Laeufer +=
-                                                  (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) / DefEr;
+                                                  (zielfigur * materialwert[zielfigur] - 40) / DefEr;
                         } // Ich decke meine Figuren
                         break;
                     }
@@ -425,7 +418,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
 
                     if (zielfeld != LEER)  {
-                        int zielfigur = abs(zielfeld);
+                        zielfigur = abs(zielfeld);
 
                         if (zielfeld == RAND) // Aus!
                             break;
@@ -440,11 +433,11 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 else Attack_Pferd += KooIch;
 
                                 Attack_Pferd +=
-                                        (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) * AttackIch;
+                                        (zielfigur * materialwert[zielfigur] - 40) * AttackIch;
                             }
                             else { Attack_Pferd += DefIch1;
 
-                                if (abs(zielfeld) < 6) Attack_Pferd -= DefIch2; } // Gegner
+                                if (zielfigur < 6) Attack_Pferd -= DefIch2; } // Gegner
                             // deckt
                             // seine
                             // Figuren
@@ -458,12 +451,12 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 else Attack_Pferd += KooEr;
 
                                 if (zielfigur == W_K || zielfigur == W_Kr) continue;
-                                Attack_Pferd += (abs(zielfeld) * materialwert[abs(zielfeld)]) /
+                                Attack_Pferd += (zielfigur * materialwert[zielfigur]) /
                                                 AttackEr;
                             }
-                            else  if (abs(zielfeld) <
+                            else  if (zielfigur <
                                       10) Attack_Pferd +=
-                                                  (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) / DefEr;
+                                                  (zielfigur * materialwert[zielfigur] - 40) / DefEr;
                         } // Ich decke meine Figuren
                         break;
                     }
@@ -479,6 +472,8 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
             } Attack_Pferd *= farbvorzeichen;
 
             n += AttSpr * Attack_Pferd;
+
+            continue;
         }
 
         if (((figur == W_B) || (figur == W_Bx))) {
@@ -498,13 +493,11 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}_*/
 
                     if (zielfeld != LEER)  {
-                        int zielfigur = abs(zielfeld);
-
                         if (zielfeld == RAND) // Aus!
                             break;
 
-                        /*   if (abs(zielfeld) == W_K)
-                                break;*/
+                        zielfigur = abs(zielfeld);
+
                         if (farbvorzeichen != _eigene_farbe)  {
                             if (zielfeld / _eigene_farbe > 0) { // Gegner greift meine Figur
                                 // an
@@ -512,11 +505,10 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 else Attack_Bauer += KooIch;
 
                                 Attack_Bauer +=
-                                        (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) * AttackIch;
+                                        (zielfigur * materialwert[zielfigur] - 40) * AttackIch;
                             }
                             else {
                                 Attack_Bauer += DefIch1 / 2;
-                                //         if (abs(zielfeld) < 6) Attack_Bauer -= DefIch2;
                             }                                   // Gegner deckt seine Figuren
                             //    1
                         } else  {
@@ -525,32 +517,26 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 else Attack_Bauer += KooEr;
 
                                 if (zielfigur == W_K || zielfigur == W_Kr) continue;
-                                Attack_Bauer += (abs(zielfeld) * materialwert[abs(zielfeld)]) /
+                                Attack_Bauer += (zielfigur * materialwert[zielfigur]) /
                                                 AttackEr;
                             }
                             else {
 
-                                if (abs(zielfeld) <
+                                if (zielfigur <
                                     10) Attack_Bauer +=
-                                                (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) /
+                                                (zielfigur * materialwert[zielfigur] - 40) /
                                                 DefEr;
-                                //    if (abs(zielfeld) < 6) Attack_Bauer -= DefIch2;
                             }
                         } // Ich decke meine Figuren
                         break;
                     }
 
-                    /*       if (farbvorzeichen != _eigene_farbe)  {
-                        //             Attack_Bauer += kingzone_ich[pos2] * Koenigsangriff_Er;
-
-                           }
-                           else  {
-                    //    Attack_Bauer += kingzone_gegner[pos2] * Koenigsangriff_Ich;
-                           }//*/
                 }
             } Attack_Bauer *= farbvorzeichen;
 
             n += AttBau * Attack_Bauer;
+
+            continue;
         }
 
         if (((figur == W_K) || (figur == W_Kr))) {
@@ -585,7 +571,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                             if (zielfeld / _eigene_farbe > 0) { // Gegner greift meine Figur an
                                 if (schlagzone_gegner[pos2] != 1) schlagzone_gegner[pos2] = 1;
                                 else Attack_Koenig += KooIch;
-                                Attack_Koenig += (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) * AttackIch;
+                                Attack_Koenig += (zielfigur * materialwert[zielfigur] - 40) * AttackIch;
                             }
                             else Attack_Koenig += DefIch1;
                             // Gegner deckt seine Figuren    1
@@ -598,9 +584,9 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                                 else Attack_Koenig += KooEr;
 
                                 if (zielfigur == W_K) continue;
-                                Attack_Koenig += (abs(zielfeld) * materialwert[abs(zielfeld)]) / AttackEr;
+                                Attack_Koenig += (zielfigur * materialwert[zielfigur]) / AttackEr;
                             }
-                            else  if (abs(zielfeld) < 10) Attack_Koenig += (abs(zielfeld) * materialwert[abs(zielfeld)] - 40) / DefEr;
+                            else  if (zielfigur < 10) Attack_Koenig += (zielfigur * materialwert[zielfigur] - 40) / DefEr;
                         } // Ich decke meine Figuren
                         break;
                     }
@@ -623,12 +609,12 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
 
     return n;
 }
+int zid;
+int m = 0; // Wieviele Z¬∏ge sind umsortiert?
+denkpaar temp;
 
 static int sort(denkpaar _zugstapel[200], int _n, int _stufe)  { // Sortiert Zugstapel neu nach Schema
-    int zid;
-    int m = 0; // Wieviele Z¬∏ge sind umsortiert?
-    denkpaar temp;
-
+    m = 0;
     for (int j = 0; j < 200; j++)  {
         zid = sort_schema[_stufe][j]; // Was ist mein j.ter Zug im Schema?
 
@@ -649,24 +635,26 @@ static int sort(denkpaar _zugstapel[200], int _n, int _stufe)  { // Sortiert Zug
     return 0;
 }
 
-static int make_schema(denkpaar _zugstapel[200], int _n, int _stufe)  {
-    for (int j = 0; j < (sortiertiefe - 1); j++)  {                   // Sortiertiefe == wieviele Züge sollen sortiert werden?
-        denkpaar temp;
-
-        if (best_one[_stufe].z.id == 0)                                 // Gibt es
+static inline int make_schema(denkpaar _zugstapel[200], int _n, int _stufe)  {
+    for (int j = 0; j < (sortiertiefe - 1); j++)  {
+        // Sortiertiefe == wieviele Züge sollen sortiert werden?
+        if (best_one[_stufe].z.id == 0)
+            // Gibt es
             // keinen
             // PV-Zug?
             break;
 
-        if (sort_schema_bewertung[_stufe][j].z.id == 0)  {              // wenn es noch keinen vorsortieren Zug gibt:
+        if (sort_schema_bewertung[_stufe][j].z.id == 0)  {                // wenn es noch keinen vorsortieren Zug gibt:
             sort_schema_bewertung[_stufe][j]          = best_one[_stufe]; // nimm den PV-Zug
-            sort_schema_bewertung[_stufe][j + 1].z.id = 0;                // setze den
+            sort_schema_bewertung[_stufe][j + 1].z.id = 0;
+            // setze den
             // nächstsortierten
             // Zug auf 0
             break;
         }
 
-        if (best_one[_stufe].z.id == sort_schema_bewertung[_stufe][j].z.id)  { // wenn
+        if (best_one[_stufe].z.id == sort_schema_bewertung[_stufe][j].z.id)  {
+            // wenn
             // der
             // PV-Zug
             // mit
@@ -675,7 +663,7 @@ static int make_schema(denkpaar _zugstapel[200], int _n, int _stufe)  {
             // Zug
             // identisch
             // ist
-            sort_schema_bewertung[_stufe][j].bewertung *= 9;
+            sort_schema_bewertung[_stufe][j].bewertung += 10;
             break;
         }
 

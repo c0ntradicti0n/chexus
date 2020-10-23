@@ -126,7 +126,7 @@ spielfeld::spielfeld()  {
     }
 }
 
-spielfeld::spielfeld(int _feld[120], int _farbe = 0, int _stufe = 0)  {
+spielfeld::spielfeld(char _feld[120], int _farbe = 0, int _stufe = 0)  {
     setFarbe(_farbe);
     setStufe(_stufe);
     { for (int i = 0; i < 120; i++)  {
@@ -184,15 +184,15 @@ feldtyp * spielfeld::to_feldtyp() {
     return neues;
 }
 
-inline int * spielfeld::to_feld(int _feld[120])  {
+inline char * spielfeld::to_feld(char _feld[120])  {
     { for (int i = 0; i < 120; i++)  {
-            _feld[i] = Feld[Stufe][i];
+            _feld[i] = (char) Feld[Stufe][i];
         } }
     return _feld;
 }
 
-inline int * spielfeld::to_feld()  {
-    int *_feld = new int [120];
+inline char * spielfeld::to_feld()  {
+    char *_feld = new char [120];
     { for (int i = 0; i < 120; i++)  {
             _feld[i] = Feld[Stufe][i];
         } }
@@ -205,7 +205,7 @@ inline void spielfeld::copy(spielfeld& _spiel)  {
     Stufe = _spiel.Stufe;
 }
 
-inline void spielfeld::setPos(int _feld[], int _farbe, int _stufe, vector<string> & _zuege) {
+inline void spielfeld::setPos(char _feld[], int _farbe, int _stufe, vector<string> & _zuege) {
     setFarbe(_farbe);
     setStufe(_stufe);
     { for (int i = 0; i < 120; i++)  {
@@ -246,7 +246,6 @@ inline void spielfeld::zug(denkpaar& _zug)  {
             Feld[Stufe][_zug.verwandelung[j].pos1] = _zug.verwandelung[j].fig;
         }
     }
-    Z = false;
 }
 
 
@@ -791,7 +790,6 @@ int spielfeld::zuggenerator()  {
 inline denkpaar * spielfeld::makeZugstapel()  {
     find_kings();
     zuggenerator();
-    Z = true;
     return zugstapel[Stufe];
 }
 
@@ -857,7 +855,7 @@ inline bool spielfeld::schach(int _farbe)  {
 void spielfeld::print_feld_computable()  {
     cout << "{";
     for (int i=0; i<120; i++) {
-        cout << Feld[Stufe][i];
+        cout << (int) Feld[Stufe][i];
         if (i != 119) {
             cout << ", ";
         }

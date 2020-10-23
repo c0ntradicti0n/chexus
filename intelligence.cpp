@@ -18,12 +18,13 @@ void graph_debug(int farbe, int alpha, double beta, int stufe, double wertung, s
 
 static void init_test_spiel_array() {
     for (int i = 0; i < ende + 2; i++) {
-        testbrett[i] = new feldtyp;
-        testspiel[i] = new spielfeld();
+        //testbrett[i] = new feldtyp;
+        //testspiel[i] = new spielfeld();
     }
 }
 
 static const set<int> ENDS = { WON  ,LOST , PATT, REMIS, MAX_WERT};
+char  * bewertungs_feld;
 
 static int _bp(
         spielfeld & spiel,
@@ -36,16 +37,21 @@ static int _bp(
 ) {// Bewertung, Planung
 
     if (((level + 1 > _stopp) || (level + 1 >= ende))) {
+        bewertungs_feld = Feld[stufe];
         int wertung = rand() % 3 - 1;
 
-        wertung += (double) 1.5 * material(Feld[stufe], farbe); //8.75-9		90
+        wertung += 1.5 * material(bewertungs_feld, farbe); //8.75-9		90
+
 
         if (alpha < wertung * farbe + 30) {
-            wertung += (double) 1.55 *
-                       entwicklung(Feld[stufe], farbe);        //0.375-0.4		-->160		1.6
-            wertung += (double) 0.1 *
-                       zuganzahl(Feld[stufe], farbe); //0,8;0.076
+            wertung += 1.55 *
+                       entwicklung(bewertungs_feld, farbe);        //0.375-0.4		-->160		1.6
+
+            wertung += 0.1 *
+                       zuganzahl(bewertungs_feld, farbe); //0,8;0.076
+
         }
+
         //graph_debug(farbe, alpha, beta, stufe, wertung, "");
         evaluations +=1;
         return farbe * wertung;
@@ -53,7 +59,7 @@ static int _bp(
 
     spiel.Farbe = farbe;
 
-    double wertung = 0;
+    int wertung = 0;
 
     //make_schema(zugstapel[stufe], spiel.n, stufe);
 
@@ -67,8 +73,7 @@ static int _bp(
         //
         // spiel.disp();
         //cout << end;
-        if (end >10000)
-            int i = 1;
+
         return end;
 
     }
@@ -76,20 +81,22 @@ static int _bp(
     sort(zugstapel[stufe], spiel.n, stufe);
     int n = spiel.n;  // Anzahl der Zuege
     int step;
+    denkpaar *move;
     for (int i = 0; i < n; i++) {
-        denkpaar *move = &zugstapel[stufe][i];
+        move = &zugstapel[stufe][i];
         step =  move->kill ? 1 : 1;
 
+        /*
         if (!valid_move(move->z)) {
             //cout << "nothing moving";
             //print_move(cout, move->z, stufe);
         }
         if (!valid_figure(move->z, Feld[stufe], stufe)) {
             //cout << "invalid figure on move";
-        }
+        }*/
 
-        testspiel[stufe]->copy(spiel);
-        testspiel[stufe]->zug(*move);
+        testspiel[stufe].copy(spiel);
+        testspiel[stufe].zug(*move);
 
         aktueller_zug[stufe] = *move;
 
@@ -118,7 +125,7 @@ static int _bp(
         }*/
 
         wertung = -_bp(
-                *testspiel[stufe],
+                testspiel[stufe],
                 -farbe,
                 -beta,
                 -alpha,
@@ -134,7 +141,6 @@ static int _bp(
             alpha = wertung; // alpha acts like max in MiniMax
             bester_zug[stufe] = zugstapel[stufe][i];
             best_one[stufe] = zugstapel[stufe][i]; //Aktueller PV-Zug
-            best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
             //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaAdjust");
         }
 
@@ -166,6 +172,10 @@ static int _bp(
         throw "returning -max value as best";
     }
     //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
+
+    make_schema(zugstapel[stufe], spiel.n, stufe);
+
+
     switch (stufe)  {
         case 0:
             {

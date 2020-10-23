@@ -314,14 +314,14 @@ int main(int argc, char **argv) {
 
                 cout << "Zug " << zug_nummer << ", von ";
                 pos1 = eingabe();
-                if (pos1 == 666 || pos2 == 666) {
+                if (pos1 == 123 || pos2 == 123) {
                     eigene_farbe *= -1;
                     break;
                 }
                 cout << "nach ";
                 pos2 = eingabe();
 
-                if (pos1 == 666 || pos2 == 666) {
+                if (pos1 == 123 || pos2 == 123) {
                     eigene_farbe *= -1;
                     break;
                 }

@@ -40,7 +40,6 @@ public:
 
     int n;
     int nn;
-    bool Z;
     int Stufe;
     int Farbe;
     int spezial;
@@ -49,7 +48,7 @@ public:
     int test = 0;
 
     spielfeld();
-    spielfeld(int _feld[120],
+    spielfeld(char _feld[120],
               int _farbe,
               int _stufe);
     void      zug_reset();
@@ -57,8 +56,8 @@ public:
     // spielfeld (spielfeld & spiel);
     feldtyp * to_feldtyp(feldtyp *neues);
     feldtyp * to_feldtyp();
-    int     * to_feld(int _feld[120]);
-    int     * to_feld();
+    char     * to_feld(char _feld[120]);
+    char     * to_feld();
     void      copy(spielfeld& _spiel);
 
     void      setFarbe(int _farbe);
@@ -73,7 +72,7 @@ public:
 
     void find_kings();
 
-    void      setPos(int _feld[120],
+    void      setPos(char _feld[120],
                      int _farbe,
                      int _stufe,
                      vector<string>& _zuege);
@@ -98,9 +97,9 @@ public:
 };
 
 
-static feldtyp * testbrett[ende+1];
+static feldtyp testbrett[ende+1]{};
 
-static spielfeld * testspiel[ende + 1];
+static spielfeld testspiel[ende + 1]{};
 
 
 

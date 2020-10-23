@@ -29,7 +29,7 @@ static string read_file_str(string filename) {
     return s;
 }
 
-int buchstabe_zahl_to_pos(char buchstabe, char zahl)  {
+char buchstabe_zahl_to_pos(char buchstabe, char zahl)  {
     for (int i = 0; i <= 7; i++)
         if ((buchstabe == buchstaben1[i]) || (buchstabe == buchstaben2[i]))
             for (int j = 0; j <= 7; j++) {
@@ -46,13 +46,13 @@ static char eingabe()  {
         char buchstabe;
         cin >> buchstabe;
 
-        if (buchstabe == '.') return 666;
+        if (buchstabe == '.') return 123;
 
         char zahl;
         cin >> zahl;
 
         if (zahl == '.')
-            return 666;
+            return 123;
         if ((buchstabe == 'x') && (zahl == 'x'))
             zahl = zahl; // pass
 

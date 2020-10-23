@@ -32,7 +32,7 @@ tuple<string, int> compute_move(spielfeld  * spiel)  {
             wert);
 }
 
-string make_move(int * feld, bool switch_farbe, int farbe)  {
+string make_move(char * feld, bool switch_farbe, int farbe)  {
     init_test_spiel_array();
     ofstream * file = init_tree_file();
 
@@ -52,7 +52,7 @@ string make_move(int * feld, bool switch_farbe, int farbe)  {
     return move;
 }
 
-string play_to_end(int * feld, int farbe)  {
+string play_to_end(char * feld, int farbe)  {
     init_test_spiel_array();
     ofstream * file = init_tree_file();
     spielfeld* spiel = new spielfeld(feld, farbe);
@@ -123,8 +123,7 @@ TEST(module_name, test_move_into_check )  {
 TEST(module_name, play_some_game_to_end )  {
     int save_stopp = STOPP;
     STOPP = 5;
-    string move = play_to_end(moves_into_check, 1);
-    ASSERT_EQ(move[0] != 'e', true);
+    play_to_end(moves_into_check, 1);
     STOPP = save_stopp;
 }
 */
@@ -133,7 +132,6 @@ TEST(module_name, test_schach_rochade_koenig_gabel )  {
     string move = make_move(schach_rochade_koenig_gabel, false, -1);
     ASSERT_EQ(move != "b5e2", true);
     ASSERT_EQ(move[0] == 'h', true);
-
 }
 
 
