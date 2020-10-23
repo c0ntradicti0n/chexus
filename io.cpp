@@ -39,8 +39,8 @@ int buchstabe_zahl_to_pos(char buchstabe, char zahl)  {
             }
 }
 
-static int eingabe()  {
-    int pos = 0;
+static char eingabe()  {
+    char pos = 0;
     do {
         cout << "Feld ('.' fuer 'zieh doch selber!'):";
         char buchstabe;
@@ -64,7 +64,7 @@ static int eingabe()  {
 
 
 // FUNKTIONEN
-static void disp(int feld[120], int form = 0)  {
+static void disp(char feld[120], char form = 0)  {
     cout << "\n";
     int breite = 3;
 
@@ -72,10 +72,10 @@ static void disp(int feld[120], int form = 0)  {
     cout << "      " << "v >-----+-----+-----+-----+-----+-----+-----+-----< v\n" <<
          "      ";
 
-    for (int j = 9; j > 1; j--)  {
+    for (char j = 9; j > 1; j--)  {
         cout << j - 1;
 
-        for (int i = 1; i < 9; i++)  {
+        for (char i = 1; i < 9; i++)  {
             if (feld[j * 10 + i] != RAND)
                 switch (form)   {
                     case 0: { cout << setw(breite) << " | " << setw(breite) <<
@@ -92,11 +92,11 @@ static void disp(int feld[120], int form = 0)  {
     cout << "\n";
 }
 
-static void disp_cleanest(int feld[120])  {
+static void disp_cleanest(char feld[120])  {
     cout << "\n";
 
-    for (int j = 9; j > 1; j--)  {
-        for (int i = 1; i < 9; i++)  {
+    for (char j = 9; j > 1; j--)  {
+        for (char i = 1; i < 9; i++)  {
             if (feld[j * 10 + i] !=
                 RAND) cout << figuren_char[feld[j * 10 + i] + figurenanzahl];
 
@@ -107,17 +107,17 @@ static void disp_cleanest(int feld[120])  {
     cout << "\n";
 }
 
-static void writ(int feld[120], int form = 0)  {
+static void writ(char feld[120], int form = 0)  {
     ofstream partie("partie.txt", ios::app);
 
     partie << "\n{\n";
     partie << "RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,\n"
            << "RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,	RAND,\n";
 
-    for (int j = 2; j < 10; j++)  {
+    for (char j = 2; j < 10; j++)  {
         partie << "RAND, ";
 
-        for (int i = 1; i < 9; i++)  {
+        for (char i = 1; i < 9; i++)  {
             if (feld[j * 10 + i] != RAND)
                 switch (form)   {
                     case 0: { partie << setw(6) <<

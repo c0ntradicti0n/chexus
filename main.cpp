@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     srand (time(NULL));
     char *fvalue = NULL;
     string svalue;
-    int ladefeld[120] = {RAND};
+    char ladefeld[120] = {RAND};
     opterr = 0;
     vector<string> zuege;
     std::regex rgx_feld("(\\.|[A-Za-y]{3})");
@@ -48,8 +48,8 @@ int main(int argc, char **argv) {
 
 
     bool exit = false;
-    int pos1;
-    int pos2;
+    char pos1;
+    char pos2;
     int wert;
     int zug_nummer = 1;
     timeline = 0;
