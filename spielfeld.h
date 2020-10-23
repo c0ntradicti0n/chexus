@@ -36,11 +36,7 @@ public:
                                  const int& pos,
                                  const int& was,
                                  const int& n);
-    inline bool      test_drohung(int feld[],
-                                  int farbe,
-                                  int pos);
-    inline int check_end(vector<string> &_zuege);
-    inline howitends last_moves();
+
 
     int n;
     int nn;
@@ -70,8 +66,10 @@ public:
     int       getStufe();
     void      setStufe(int i);
 
-    bool      look_richtung_td(const int feld [], const int &farbe, const int &pos, const int &step);
-    bool      look_richtung_ld(const int feld [], const int &farbe, const int &pos, const int &step);
+    inline bool test_drohung(const char feld[], const int &farbe, const int &pos, const int &except_pos);
+    inline bool look_richtung_td(const char feld [], const int &farbe, const int &pos, const int &except_pos, const int &step);
+    inline bool look_richtung_ld(const char feld [], const int &farbe, const int &pos, const int &except_pos, const int &step);
+    inline int check_end(vector<string> &_zuege);
 
     void find_kings();
 
@@ -89,8 +87,10 @@ public:
     denkpaar* makeZugstapel();
 
     void zug(denkpaar&);
+
     void realer_zug(denkpaar&, vector<string>& _zuege);
-    void norm_zug(denkpaar&);
+    void make_move_real(string move);
+
     bool schach(int _farbe);
 
     void switch_feld();

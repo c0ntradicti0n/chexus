@@ -4,7 +4,7 @@
 static void print_move(ostream& file, zug z, int stufe);
 
 
-inline double entwicklung(int feld[120], int farbe)    {
+inline double entwicklung(char feld[120], int farbe)    {
     double wertung = 0;
     int    dieses_feld;
 
@@ -33,7 +33,7 @@ inline double entwicklung(int feld[120], int farbe)    {
 }
 
 
-inline double material(int feld[120], int farbe)  {
+inline double material(char feld[120], int farbe)  {
     double wert = 0;
     int    figur;
     for(int j=21; j<99; ++j) {kingzone_gegner[j] = 0;kingzone_ich[j] = 0;}
@@ -100,7 +100,7 @@ int Attack_Bauer = 0;
 int Attack_Koenig = 0;
 
 
-inline int zuganzahl(int feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
+inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
     // Offizieren und
     // Bauern inclusive
     // Deckung und
@@ -734,7 +734,7 @@ static int move_sort_schema(int c = 6)  {
 static bool valid_move(zug z)  {
     return z.pos.pos1>0 && z.pos.pos1<120 && z.pos.pos2>0 && z.pos.pos2<120;
 }
-static bool valid_figure(zug z, int * feld, int stufe)  {
+static bool valid_figure(zug z, char * feld, int stufe)  {
     bool result =
         feld[z.pos.pos1] != LEER && feld[z.pos.pos1] != RAND &&
         feld[z.pos.pos2]!=RAND;

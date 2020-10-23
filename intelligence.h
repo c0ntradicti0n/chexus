@@ -21,34 +21,23 @@ union zug {
     }   pos;
     int id : 32;
 };
+
 struct denkpaar {
     zug    z;
-    int    farbe;
-    int    figur;
-    int    spezial;
     int    bewertung;
-    int    i;
     wandel verwandelung[20];
     int    nw;
-    bool   reckoning;
     bool   kill;
-
-    int finds[120]; // Find
 };
 
-struct figurtyp {
-    int  pos1;
-    int  pos2;
-    bool schach;
-    bool bewegt;
-};
+
 struct feldtyp  {
     int feld[120];
     int x;
 };
 
 int eigene_farbe = 1;  // Sicht des Computers --1-0
-int stopp        = 9;  // normale Suchtiefe, wird ver‚Ä∞ndert
+char STOPP        = 6;  // normale Suchtiefe
 const int ende   = 15; // maximale Suchtiefe
 int sortiertiefe = 15; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
 //int figurenwert_weiss = 0;
@@ -81,7 +70,6 @@ static state status = uci;
 // const char _DEFAULT_PATH[] = "partie";
 
 static const int figurenanzahl = 12; // bei disp()
-static bool killFlag           = true;
 static const int MAX_WERT      = 99999999;
 
 static vector<zug> Beam = vector<zug>(ende, zug());
@@ -93,15 +81,24 @@ enum howitends      {
     NORMAL = 0,
     LOST = - 666666
 };
-map<int, string> END_NAMES = {{WON, "w_won"}, {LOST, "w_lost"},{PATT, "w_patt"}, {NORMAL, "normal"},{REMIS, "w_remis"},
-                              {-WON, "b_won"}, {-LOST, "b_lost"},{-PATT, "b_patt"}, {REMIS, "b_remis"}};
+
+map<int, string> END_NAMES = {
+        {WON, "w_won"}, {LOST, "w_lost"}, {PATT, "w_patt"}, {NORMAL, "normal"}, {REMIS, "w_remis"},
+
+        {-WON, "b_won"}, {-LOST, "b_lost"},{-PATT, "b_patt"}, {REMIS, "b_remis"}
+};
 
 
-enum espezial           { NICHTS = 0, SCHACH = 1, UNRUH = 2 };
-enum spiel_status   { Eroeffnung, Mittelspiel, Spaetspiel, Endspiel };
+enum espezial
+        { NICHTS = 0, SCHACH = 1, UNRUH = 2 };
+
+enum spiel_status
+        { Eroeffnung, Mittelspiel, Spaetspiel, Endspiel };
+
 static const char *spiel_status_namen[] = {
         "Eroeffnung", "Mittelspiel", "Mittel-Endspiel", "Endspiel"
 };
+
 enum figuren            { // bei disp()
     S_Tr = -12, S_Kr = -11,
     S_K  = -10, S_D, S_T, S_L,
@@ -609,8 +606,9 @@ static int bewegung[15][15] = // Anzahl, Richtung, Weite, wohin[richtung]
 static int zug_nummer;
 static denkpaar aktueller_zug[ende];
 static denkpaar bester_zug[ende];
-static int __FELD[ende + 2][120];
-static int Feld[ende + 2][200];
+
+static char Feld[ende + 2][200];
+
 static denkpaar zugstapel[ende + 2][200];
 static denkpaar best_one[ende + 2];
 static int sort_schema[ende][200];

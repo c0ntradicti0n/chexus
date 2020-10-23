@@ -68,8 +68,10 @@ bool zuege_wied(vector<string>& _zuege)  {
     }
 }
 
+int opponents_color;
 int spielfeld::check_end(vector<string> &_zuege) {
     find_kings();
+    opponents_color = Farbe*-1;
     //print_zugstapel();
     //cout << "STUFE::: "<< this ->getStufe() << " w king: "<< this->wking << " b king: " << this->bking;
 
@@ -94,14 +96,14 @@ int spielfeld::check_end(vector<string> &_zuege) {
         op_king_pos = this->bking;
     }
 
-    if (this->test_drohung(Feld[this->getStufe()], this->Farbe, my_king_pos)) {
+    if (this->test_drohung(Feld[this->getStufe()], this->Farbe, my_king_pos, my_king_pos)) {
         // If we have check, we can move
         if (this->n == 0) {
             return LOST;
         }
     }
 
-    if (this->test_drohung(Feld[this->getStufe()], this->Farbe*-1, op_king_pos)) {
+    if (this->test_drohung(Feld[this->getStufe()], opponents_color, op_king_pos, op_king_pos)) {
         // If we can take the king, we won
         return WON;
     }
@@ -116,40 +118,12 @@ int spielfeld::check_end(vector<string> &_zuege) {
 
 }
 
-int gegner;
-howitends spielfeld::last_moves()  {
-    // testet, ob, nachdem der Zug gesetzt wurde, noch Schach ist; wenn der
-    // Gegner nach seinem Zug noch im Schach steht,
-    // hat er einen falschen gemacht
-    gegner = this->Farbe;
-
-    find_kings();
-
-    if (Farbe  < 0)  {
-        if (this->test_drohung(Feld[this->getStufe()], 1, this->wking))  {
-            //cout << "weiss hat schach";
-
-            /* test =1;*/
-            return LOST; // verloren
-        }
-    }
-
-    if (Farbe > 0)  {
-        if (this->test_drohung(Feld[this->getStufe()], -1, this->bking))  {
-            //cout << "schwarz hat schach";
-            /*test = 1;*/
-            return WON;
-        }
-    }
-    return NORMAL;
-}
-
 spielfeld::spielfeld()  {
     Farbe = 0;
     Stufe = 0;
-    { for (int i = 0; i < 120; i++)  {
-            Feld[Stufe][i] = 0;
-        } }
+    for (int i = 0; i < 120; i++)  {
+        Feld[Stufe][i] = 0;
+    }
 }
 
 spielfeld::spielfeld(int _feld[120], int _farbe = 0, int _stufe = 0)  {
@@ -160,7 +134,7 @@ spielfeld::spielfeld(int _feld[120], int _farbe = 0, int _stufe = 0)  {
         } }
 }
 
-string int_array_to_string(int int_array[], int size_of_array) {
+string int_array_to_string(char int_array[], int size_of_array) {
     ostringstream oss("");
 
     for (int temp = 0; temp < size_of_array; temp++) oss << int_array[temp];
@@ -275,17 +249,26 @@ inline void spielfeld::zug(denkpaar& _zug)  {
     Z = false;
 }
 
-inline void spielfeld::norm_zug(denkpaar& _zug)  {
-    Feld[0][_zug.z.pos.pos2] = Feld[Stufe][_zug.z.pos.pos1];
-    Feld[0][_zug.z.pos.pos1] = LEER;
 
-    if ((_zug.nw)) {
-        int max = _zug.nw;
+void spielfeld::make_move_real(string move)  {
+    int n = zuggenerator();
+    bool ok = false;
 
-        for (int j = 0; j < max; j++) {
-            Feld[0][_zug.verwandelung[j].pos1] = _zug.verwandelung[j].fig;
+    int pos1 = buchstabe_zahl_to_pos(move[0], move[1]);
+    int pos2 = buchstabe_zahl_to_pos(move[2], move[3]);
+
+    for (int i = 0; i < n; i++) {
+        union zug z = zugstapel[Stufe][i].z;
+        if ((z.pos.pos1 == pos1) &&
+            z.pos.pos2 == pos2) {
+            ok = true;
+            realer_zug(zugstapel[Stufe][i], *new vector<string>);
+            zug_reset();
+            break;
         }
     }
+    if (!ok)
+        throw "move to be made not found in zugstapel!";
 }
 
 inline void spielfeld::realer_zug(denkpaar& _zug, vector<string>& _zuege)  {
@@ -305,7 +288,6 @@ inline void spielfeld::add_zug(const int & pos1,
     zugstapel[Stufe][_n].z.pos.pos2 = pos2;
     zugstapel[Stufe][_n].z.pos.fig = _figur;
     zugstapel[Stufe][_n].kill       = _kill;
-    zugstapel[Stufe][_n].figur      = _figur;
     n++;
     return;
 }
@@ -319,12 +301,16 @@ inline void spielfeld::add_verwandelung(const int& farbe,
     zugstapel[Stufe][n].nw++;
 }
 
-inline bool spielfeld::look_richtung_td(const int feld[], const int &farbe, const int &pos, const int &step)  {
-    int zielfeld, farbvorzeichen, i;
-    for (i = pos + step; 19 < i && i < 100; i += step)  {
-        zielfeld = feld[i];
+
+inline bool spielfeld::look_richtung_td(const char feld[], const int &farbe, const int &pos, const int &except_pos, const int &step)  {
+    int zielfeld, farbvorzeichen, test_pos;
+
+    for (test_pos = pos + step; 19 < test_pos && test_pos < 100; test_pos += step)  {
+        zielfeld = feld[test_pos];
         if (zielfeld == RAND) break;
+
         if (zielfeld == LEER) continue;
+        if (test_pos == except_pos) continue;
 
         if ((zielfeld == W_D * farbe * -1) ||
             (zielfeld == W_T * farbe * -1) ||
@@ -336,13 +322,15 @@ inline bool spielfeld::look_richtung_td(const int feld[], const int &farbe, cons
     return false;
 }
 
-inline bool spielfeld::look_richtung_ld(const int feld[], const int &farbe, const int &pos, const int &step)  {
-    int zielfeld, farbvorzeichen, i;
+inline bool spielfeld::look_richtung_ld(const char feld[], const int &farbe, const int &pos, const int &except_pos, const int &step)  {
+    int zielfeld, farbvorzeichen, test_pos;
 
-    for (i = pos + step; 19 < i && i < 100; i += step)  {
-        zielfeld = feld[i];
+    for (test_pos = pos + step; 19 < test_pos && test_pos < 100; test_pos += step)  {
+        zielfeld = feld[test_pos];
         if (zielfeld == RAND) break;
         if (zielfeld == LEER) continue;
+        if (test_pos == except_pos)
+            continue;
 
         farbvorzeichen = abs(zielfeld) / zielfeld;
 
@@ -356,26 +344,30 @@ inline bool spielfeld::look_richtung_ld(const int feld[], const int &farbe, cons
     return false;
 }
 
-inline bool spielfeld::test_drohung(int feld[], int farbe, int pos)  {
+inline bool spielfeld::test_drohung(const char feld[], const int &farbe, const int &pos, const int &except_pos)  {
     if ((pos < 0) || (pos > 99)) {
         cout << pos << " ";
         return false;
     }
 
-    return look_richtung_td(feld, farbe, pos, 10) ||
-           look_richtung_td(feld, farbe, pos, -10) ||
-           look_richtung_td(feld, farbe, pos,  1) ||
-           look_richtung_td(feld, farbe, pos, -1) ||
+    return look_richtung_td(feld, farbe, pos, except_pos, 10) ||
+           look_richtung_td(feld, farbe, pos, except_pos, -10) ||
+           look_richtung_td(feld, farbe, pos, except_pos,  1) ||
+           look_richtung_td(feld, farbe, pos, except_pos, -1) ||
 
-           look_richtung_ld(feld, farbe, pos,  9) ||
-           look_richtung_ld(feld, farbe, pos,  -9) ||
-           look_richtung_ld(feld, farbe, pos, 11) ||
-           look_richtung_ld(feld, farbe, pos, -11) ||
+           look_richtung_ld(feld, farbe, pos, except_pos,  9) ||
+           look_richtung_ld(feld, farbe, pos, except_pos,  -9) ||
+           look_richtung_ld(feld, farbe, pos, except_pos, 11) ||
+           look_richtung_ld(feld, farbe, pos, except_pos, -11) ||
 
            (feld[pos + 21 * farbe] == W_P * farbe * -1) ||
            (feld[pos + 12 * farbe] == W_P * farbe * -1) ||
            (feld[pos + 19 * farbe] == W_P * farbe * -1) ||
            (feld[pos + 8  * farbe] == W_P * farbe * -1) ||
+            (feld[pos - 21 * farbe] == W_P * farbe * -1) ||
+            (feld[pos - 12 * farbe] == W_P * farbe * -1) ||
+            (feld[pos - 19 * farbe] == W_P * farbe * -1) ||
+            (feld[pos - 8  * farbe] == W_P * farbe * -1) ||
            (feld[pos + 9  * farbe] == W_B * farbe * -1) ||
            (feld[pos + 11 * farbe] == W_B * farbe * -1) ||
 
@@ -461,7 +453,6 @@ int spielfeld::zuggenerator()  {
 
         farbvorzeichen = figur / Feld[Stufe][i];
 
-
         pos1           = i;
 
         if (farbvorzeichen == Farbe)      {
@@ -472,9 +463,6 @@ int spielfeld::zuggenerator()  {
                     // en passant bauer, der nicht gezogen wird, kann spaeter nicht mehr
                     en_passent_bauer = pos1;
                 }
-
-
-
 
                 ziel = pos2 = pos1 + farbvorzeichen * 9;
 
@@ -614,13 +602,13 @@ int spielfeld::zuggenerator()  {
 
 
                         if ((figur == W_Kr) || (figur == W_K)) {
-                            if (test_drohung(Feld[Stufe], Farbe, pos1)) {
+                            if (test_drohung(Feld[Stufe], Farbe, pos1, pos1)) {
                                 test = 1;
 
                             }
-                            if (test_drohung(Feld[Stufe], Farbe, pos2))  {
+                            if (test_drohung(Feld[Stufe], Farbe, pos2, 0))  {
                                 test = 1;
-                                break;
+                                continue;
                             }
                         }
 
@@ -693,13 +681,13 @@ int spielfeld::zuggenerator()  {
                     }
 
                     if ((figur == W_Kr) || (figur == W_K) ) {
-                        if (test_drohung(Feld[Stufe], Farbe, pos1)) {
+                        if (test_drohung(Feld[Stufe], Farbe, pos1, pos1)) {
                             test = 1;
 
                         }
-                        if (test_drohung(Feld[Stufe], Farbe, pos2))  {
+                        if (test_drohung(Feld[Stufe], Farbe, pos2, pos1))  {
                             //    test = 1;
-                            break;
+                            continue;
                         }
 
                     }
@@ -710,8 +698,6 @@ int spielfeld::zuggenerator()  {
                     if (figur == W_Tr) {
                         add_verwandelung(farbvorzeichen, pos2, W_T, n);
                     }
-
-
 
                     add_zug(pos1, pos2, n, false, figur);
                 }
@@ -726,9 +712,11 @@ int spielfeld::zuggenerator()  {
             if ((Feld[Stufe][95] == S_Kr) && (Feld[Stufe][96] == LEER) &&
                 (Feld[Stufe][97] == LEER) && (Feld[Stufe][98] == S_Tr))  {
                 if (!test_drohung(Feld[Stufe], Farbe,
-                                  95) &&
+                                  95, 95) &&
                     !test_drohung(Feld[Stufe], Farbe,
-                                  96) && !test_drohung(Feld[Stufe], Farbe, 97))  {
+                                  96, 95) &&
+                    !test_drohung(Feld[Stufe], Farbe,
+                                       97, 95))  {
                     add_verwandelung(Farbe, 97, W_K,  n);
                     add_verwandelung(Farbe, 96, W_T,  n);
                     add_verwandelung(Farbe, 98, LEER, n);
@@ -740,9 +728,10 @@ int spielfeld::zuggenerator()  {
                 (Feld[Stufe][93] == LEER) && (Feld[Stufe][92] == LEER) &&
                 (Feld[Stufe][91] == S_Tr))  {
                 if (!test_drohung(Feld[Stufe], Farbe,
-                                  95) &&
+                                  95, 95) &&
                     !test_drohung(Feld[Stufe], Farbe,
-                                  94) && !test_drohung(Feld[Stufe], Farbe, 93))  {
+                                  94, 95) &&
+                    !test_drohung(Feld[Stufe], Farbe, 93, 95))  {
                     add_verwandelung(Farbe, 93, W_K,  n);
                     add_verwandelung(Farbe, 94, W_T,  n);
                     add_verwandelung(Farbe, 91, LEER, n);
@@ -754,9 +743,10 @@ int spielfeld::zuggenerator()  {
             if ((Feld[Stufe][25] == W_Kr) && (Feld[Stufe][26] == LEER) &&
                 (Feld[Stufe][27] == LEER) && (Feld[Stufe][28] == W_Tr))  {
                 if (!test_drohung(Feld[Stufe], Farbe,
-                                  25) &&
+                                  25, 25) &&
                     !test_drohung(Feld[Stufe], Farbe,
-                                  26) && !test_drohung(Feld[Stufe], Farbe, 27))  {
+                                  26, 25) &&
+                    !test_drohung(Feld[Stufe], Farbe, 27, 25))  {
                     add_verwandelung(Farbe, 27, W_K,  n);
                     add_verwandelung(Farbe, 26, W_T,  n);
                     add_verwandelung(Farbe, 28, LEER, n);
@@ -768,9 +758,10 @@ int spielfeld::zuggenerator()  {
                 (Feld[Stufe][23] == LEER) && (Feld[Stufe][22] == LEER) &&
                 (Feld[Stufe][21] == W_Tr))  {
                 if (!test_drohung(Feld[Stufe], Farbe,
-                                  25) &&
+                                  25, 25) &&
                     !test_drohung(Feld[Stufe], Farbe,
-                                  24) && !test_drohung(Feld[Stufe], Farbe, 23))  {
+                                  24, 24) &&
+                    !test_drohung(Feld[Stufe], Farbe, 23, 25))  {
                     add_verwandelung(Farbe, 23, W_K,  n);
                     add_verwandelung(Farbe, 24, W_T,  n);
                     add_verwandelung(Farbe, 21, LEER, n);
@@ -786,7 +777,7 @@ int spielfeld::zuggenerator()  {
         int q;
 
         for (q = 0; q < n; q++)  {
-            figur = zugstapel[Stufe][q].figur;
+            figur = zugstapel[Stufe][q].z.pos.fig;
 
             if (!((figur  == W_Bp_l) || (figur  == W_Bp_r)))  {
                 add_verwandelung(Farbe, en_passent_bauer, W_B, q);
@@ -798,6 +789,7 @@ int spielfeld::zuggenerator()  {
 
 
 inline denkpaar * spielfeld::makeZugstapel()  {
+    find_kings();
     zuggenerator();
     Z = true;
     return zugstapel[Stufe];
@@ -927,7 +919,7 @@ void spielfeld::switch_feld()  {
 void spielfeld::print_zugstapel()  {
     cout << "n=" << n << endl;
     for (int i = 0; i < n; i++)  {
-        cout << figuren_char[zugstapel[Stufe][i].figur  + figurenanzahl] << ": "
+        cout << figuren_char[zugstapel[Stufe][i].z.pos.fig  + figurenanzahl] << ": "
              << int(zugstapel[Stufe][i].z.pos.pos1) << "(" <<
              grundfeld_bezeichnungen[zugstapel[Stufe][i].z.pos.pos1] << ")  => "
              << int(zugstapel[Stufe][i].z.pos.pos2) << "(" <<

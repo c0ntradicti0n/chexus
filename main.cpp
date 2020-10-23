@@ -252,7 +252,7 @@ int main(int argc, char **argv) {
                     move_sort_schema();
 
                     wert =  run_speaking(_stopp, spiel);
-                    if ((clock() - t1 >= 300) && (_stopp >= stopp))
+                    if ((clock() - t1 >= 300) && (_stopp >= STOPP))
                         break;
                 }
 
@@ -357,7 +357,7 @@ int main(int argc, char **argv) {
 
             wert = run(_stopp, spiel);
 
-            if ((clock() - t1 >= 300) && (_stopp >= stopp))
+            if ((clock() - t1 >= 300) && (_stopp >= STOPP))
                 break;
         }
 
