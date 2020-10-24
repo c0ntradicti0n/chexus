@@ -222,7 +222,7 @@ int main(int argc, char **argv) {
 
                             spiel.makeZugstapel();
                             bool falsch = true;
-                            for (i = 0; i < spiel.n; i++) {
+                            for (i = 0; i < spiel.n_zuege; i++) {
                                 if ((zugstapel[spiel.Stufe][i].z.id == _zug.z.id)) {
                                     spiel.realer_zug(zugstapel[spiel.Stufe][i], zuege);
 
@@ -248,7 +248,7 @@ int main(int argc, char **argv) {
                 spiel.setStufe(0);
 
                 for (int _stopp = 1;; _stopp++) {
-                    make_schema(zugstapel[spiel.getStufe()], spiel.n, 0);
+                    make_schema(zugstapel[spiel.getStufe()], spiel.n_zuege, 0);
                     move_sort_schema();
 
                     wert =  run_speaking(_stopp, spiel);
@@ -332,9 +332,6 @@ int main(int argc, char **argv) {
                         z.pos.pos2 == pos2) {
                         ok = true;
                         spiel.realer_zug(zugstapel[spiel.getStufe()][i], zuege);
-                        //zuege_append(zuege, spiel.hash());
-                        //if (zuege_wied(zuege)) exit = true;
-                        spiel.zug_reset();
                         break;
                     }
                 }
@@ -355,19 +352,17 @@ int main(int argc, char **argv) {
             cout << "Suchtiefe " << _stopp << "\n";
             //   if (_stopp == 0)
 
-            wert = run(_stopp, spiel);
+            run(_stopp, spiel);
 
             if ((clock() - t1 >= 300) && (_stopp >= STOPP))
                 break;
         }
 
-        make_schema(zugstapel[spiel.getStufe()], spiel.n, 0);
+        make_schema(zugstapel[spiel.getStufe()], spiel.n_zuege, 0);
         move_sort_schema();
         t2 = clock();
         timeline = (double)(timeline * (zug_nummer - 1) / zug_nummer +
                             (t2 - t1) / zug_nummer);
-        int spez;
-        denkpaar *zugstapel = new denkpaar[200];
 
         cout << "\nmove " << (double)zug_nummer / 2 << ": "
              << ((spiel.Farbe > 0) ? "white" : "black") << ", "
@@ -380,6 +375,7 @@ int main(int argc, char **argv) {
              << " => " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";
 
         spiel.realer_zug(bester_zug[0], zuege);
+        spiel.disp();
 
         exit = true;
         switch (spiel.check_end(zuege)) {
@@ -397,11 +393,11 @@ int main(int argc, char **argv) {
                 break;
             }
             case WON: {
-                cout << "Gewonnen/n";
+                cout << "Gewonnen/n_zuege";
                 break;
             }
             case NORMAL: {
-                //cout << "weiter\n";
+                //cout << "weiter\n_zuege";
                 exit = false;
                 break;
             }
@@ -411,7 +407,7 @@ int main(int argc, char **argv) {
             }
         }
 
-        spiel.zug_reset();
+        //spiel.zug_reset();
         zug_nummer++;
 
     } while (!exit);

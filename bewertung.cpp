@@ -41,10 +41,10 @@ inline float material(char * &feld, int & farbe)  {
         if ((figur == RAND) || (figur == LEER)) continue;
         wert += figur * materialwert[abs(figur)];
 
-        //	cout << OpenLines[3] << "\n";
+        //	cout << OpenLines[3] << "\n_zuege";
         //		if (abs(figur)<6) {	OpenLines[i%10-1]=0;}
 
-        //	cout << OpenLines[3] << "\n";
+        //	cout << OpenLines[3] << "\n_zuege";
 
         /*if ((abs(figur) == W_K||abs(figur) == W_Kr) && (feld[i]/abs(figur)) != farbe)
            {kingzone_gegner[i] = 1;
@@ -82,7 +82,6 @@ int farbvorzeichen;
 int Attack = 0;
 char schlagzone_ich[120] = {0};
 char schlagzone_gegner[120] = {0};
-int n = 0;
 int n_Dame      = -5;
 int Attack_Dame = 0;
 int zielfeld;
@@ -109,7 +108,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
     Attack = 0;
     schlagzone_ich[120] = {0};
     schlagzone_gegner[120] = {0};
-    n = 0;
+    int result = 0;
     n_Dame      = -5;
     Attack_Dame = 0;
 
@@ -186,7 +185,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
 
                         if ((n_Dame > 8) && (n_Dame < 10)) n_Dame += 0.5;  // -12.5
                     } else  {
-                        //  if (kingzone_gegner[pos2] == 1) cout << "HALLO" << kingzone_gegner[pos2] * Koenigsangriff_Ich << " \n";
+                        //  if (kingzone_gegner[pos2] == 1) cout << "HALLO" << kingzone_gegner[pos2] * Koenigsangriff_Ich << " \n_zuege";
                         //      Attack_Dame += kingzone_gegner[pos2] * Koenigsangriff_Ich;
                         if (n_Dame < 9) n_Dame = n_Dame + 1;               // 12
 
@@ -196,8 +195,8 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
             }
             n_Dame      *= farbvorzeichen;
             Attack_Dame *= farbvorzeichen;
-            //  cout << MobDame * n_Dame + AttDame * Attack_Dame << "\n";
-            n           += MobDame * n_Dame + AttDame * Attack_Dame;
+            //  cout << MobDame * n_Dame + AttDame * Attack_Dame << "\n_zuege";
+           result          += MobDame * n_Dame + AttDame * Attack_Dame;
 
             continue;
         }
@@ -287,7 +286,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                 }
             }
             n_Turm   *= farbvorzeichen; Attack_Turm *= farbvorzeichen;
-            n        += MobTurm * n_Turm + AttTurm * Attack_Turm;
+           result       += MobTurm * n_Turm + AttTurm * Attack_Turm;
 
             continue;
 
@@ -399,7 +398,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                 }
             } n_Laeufer *= farbvorzeichen; Attack_Laeufer *= farbvorzeichen;
 
-            n += MobLau * n_Laeufer + AttLau * Attack_Laeufer;
+           result+= MobLau * n_Laeufer + AttLau * Attack_Laeufer;
         }
 
         if ((figur == W_P)) {
@@ -415,7 +414,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        for (int weite = 0; weite <= bewegung[W_K][1]; weite++)  {
                        pos2 = i + farbvorzeichen * bewegung[W_K][2+richtung] * (weite+1);
                        int zielfeldk = feld[pos2];
-                       if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
+                       if (zielfeld == zielfeldk) n_zuege -= 400*farbvorzeichen;return n_zuege;}}*/
 
                     if (zielfeld != LEER)  {
                         zielfigur = abs(zielfeld);
@@ -471,7 +470,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                 }
             } Attack_Pferd *= farbvorzeichen;
 
-            n += AttSpr * Attack_Pferd;
+           result+= AttSpr * Attack_Pferd;
 
             continue;
         }
@@ -490,7 +489,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        for (int weite = 0; weite <= bewegung[W_K][1]; weite++)  {
                        pos2 = i + farbvorzeichen * bewegung[W_K][2+richtung] * (weite+1);
                        int zielfeldk = feld[pos2];
-                       if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}_*/
+                       if (zielfeld == zielfeldk) n_zuege -= 400*farbvorzeichen;return n_zuege;}}_*/
 
                     if (zielfeld != LEER)  {
                         if (zielfeld == RAND) // Aus!
@@ -534,7 +533,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                 }
             } Attack_Bauer *= farbvorzeichen;
 
-            n += AttBau * Attack_Bauer;
+           result+= AttBau * Attack_Bauer;
 
             continue;
         }
@@ -554,7 +553,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                        for (int weite = 0; weite <= bewegung[W_K][1]; weite++)  {
                        pos2 = i + farbvorzeichen * bewegung[W_K][2+richtung] * (weite+1);
                        int zielfeldk = feld[pos2];
-                       if (zielfeld == zielfeldk) n -= 400*farbvorzeichen;return n;}}*/
+                       if (zielfeld == zielfeldk) n_zuege -= 400*farbvorzeichen;return n_zuege;}}*/
 
                     if (zielfeld != LEER)  {
                         zielfigur = abs(zielfeld);
@@ -602,13 +601,19 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
             } Attack_Koenig *= farbvorzeichen;
 
             // KSafety *= farbvorzeichen;
-            // cout << KSafety << "\n";
-            n += AttKoe * Attack_Koenig; // + KSafety;
+            // cout << KSafety << "\n_zuege";
+           result += AttKoe * Attack_Koenig; // + KSafety;
         }
     }
 
-    return n;
+    return result;
 }
+
+
+static bool valid_move(zug z)  {
+    return (z.pos.pos1>0) && (z.pos.pos1<120) && (z.pos.pos2>0) && (z.pos.pos2<120);
+}
+
 int zid;
 int m = 0; // Wieviele Z¬∏ge sind umsortiert?
 denkpaar temp;
@@ -616,13 +621,18 @@ denkpaar temp;
 static int sort(denkpaar _zugstapel[200], int _n, int _stufe)  { // Sortiert Zugstapel neu nach Schema
     m = 0;
     for (int j = 0; j < 200; j++)  {
-        zid = sort_schema[_stufe][j]; // Was ist mein j.ter Zug im Schema?
+        zid = sort_schema_bewertung[_stufe][j].z.id; // Was ist mein j.ter Zug im Schema?
 
         if (zid == 0) {
             break;
         }
 
-        for (int i = 0; i < _n; i++) {      // vergleichen mit zugstapel
+        for (int i = 0; i < _n && m < _n; i++) {      // vergleichen mit zugstapel
+            if (m==i)  {
+                continue;
+            }
+            if (!valid_move(_zugstapel[i].z))
+                cout << "sorting invalid move";
             if (_zugstapel[i].z.id == zid)  { // An welcher Position ist der im Zugstapel?
                 temp          = _zugstapel[i];  // Vertausche den Zug
                 _zugstapel[i] = _zugstapel[m];
@@ -669,7 +679,7 @@ static inline int make_schema(denkpaar _zugstapel[200], int _n, int _stufe)  {
 
         /*cout << "Vorsortierung:" <<
            grundfeld_bezeichnungen[best_one[_stufe].z.pos.pos1] <<
-           grundfeld_bezeichnungen[best_one[_stufe].z.pos.pos2] << "\n*/
+           grundfeld_bezeichnungen[best_one[_stufe].z.pos.pos2] << "\n_zuege*/
         if (best_one[_stufe].bewertung >
             sort_schema_bewertung[_stufe][j].bewertung)  {
             // Wenn Bewertung des best_one besser --> einordnen
@@ -689,8 +699,8 @@ static inline int make_schema(denkpaar _zugstapel[200], int _n, int _stufe)  {
                 }
             }
             sort_schema_bewertung[_stufe][j + 1 + i].z.id = 0;
-            break; // Abrechen, nachdem  e i n  zug eingeordnet ist.
-            //	cout << best_one[_stufe].z.id << "\n";
+            break; // Abrechen, nachdem  e i n_zuege  zug eingeordnet ist.
+            //	cout << best_one[_stufe].z.id << "\n_zuege";
         }        // */
     }
 
@@ -719,15 +729,13 @@ static int move_sort_schema(int c = 6)  {
 }
 
 
-static bool valid_move(zug z)  {
-    return z.pos.pos1>0 && z.pos.pos1<120 && z.pos.pos2>0 && z.pos.pos2<120;
-}
 static bool valid_figure(zug z, char * feld, int stufe)  {
     bool result =
-        feld[z.pos.pos1] != LEER && feld[z.pos.pos1] != RAND &&
-        feld[z.pos.pos2]!=RAND;
+        Feld[stufe][z.pos.pos1] != LEER && Feld[stufe][z.pos.pos1] != RAND &&
+                Feld[stufe][z.pos.pos2]!=RAND;
     if (!result)  {
         cout << "invalid:";
+        cout<<  (int) z.pos.pos1 <<  (int) z.pos.pos2 << grundfeld_bezeichnungen[ Feld[stufe][z.pos.pos1] + figurenanzahl ]<< grundfeld_bezeichnungen[Feld[stufe][z.pos.pos2]+figurenanzahl];
         print_move(cout, z, stufe);
     }
     return result;

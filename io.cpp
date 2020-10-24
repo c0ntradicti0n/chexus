@@ -30,35 +30,30 @@ static string read_file_str(string filename) {
 }
 
 char buchstabe_zahl_to_pos(char buchstabe, char zahl)  {
-    for (int i = 0; i <= 7; i++)
-        if ((buchstabe == buchstaben1[i]) || (buchstabe == buchstaben2[i]))
+    for (int i = 0; i <= 7; i++) {
+        if ((buchstabe == buchstaben1[i]) || (buchstabe == buchstaben2[i])) {
             for (int j = 0; j <= 7; j++) {
                 if (zahl == zahlen[j]) {
                     return 21 + j * 10 + i;
                 }
             }
+        }
+    }
+    return 0;
 }
 
 static char eingabe()  {
     char pos = 0;
+    string move = "xxxx";
+    char buchstabe, zahl;
+    cin.clear();
     do {
-        cout << "Feld ('.' fuer 'zieh doch selber!'):";
-        char buchstabe;
-        cin >> buchstabe;
-
-        if (buchstabe == '.') return 123;
-
-        char zahl;
-        cin >> zahl;
-
-        if (zahl == '.')
-            return 123;
-        if ((buchstabe == 'x') && (zahl == 'x'))
-            zahl = zahl; // pass
-
+        cin >> move;
+        if ((int) move[0] == (int) '.') return 123;
+        buchstabe = move[0];
+        zahl = move[1];
         pos = buchstabe_zahl_to_pos(buchstabe, zahl);
-        if (cin.eof()) throw endofinput();
-    } while (pos !=0);
+    } while (pos == 0);
     return pos;
 }
 

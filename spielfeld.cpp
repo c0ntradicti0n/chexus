@@ -76,7 +76,7 @@ int spielfeld::check_end(vector<string> &_zuege) {
     //cout << "STUFE::: "<< this ->getStufe() << " w king: "<< this->wking << " b king: " << this->bking;
 
     if (this -> wking == 0)  {
-        //disp();
+        disp();
         cout << "He took the white king!\n";
         return LOST ;
     }
@@ -86,19 +86,9 @@ int spielfeld::check_end(vector<string> &_zuege) {
         return LOST ;
     }
 
-    int my_king_pos, op_king_pos;
-
-    if (this->Farbe < 0) {
-        my_king_pos = this->bking;
-        op_king_pos = this->wking;
-    } else {
-        my_king_pos = this->wking;
-        op_king_pos = this->bking;
-    }
-
     if (this->test_drohung(Feld[this->getStufe()], this->Farbe, my_king_pos, my_king_pos)) {
         // If we have check, we can move
-        if (this->n == 0) {
+        if (this->n_zuege == 0) {
             return LOST;
         }
     }
@@ -111,7 +101,7 @@ int spielfeld::check_end(vector<string> &_zuege) {
     if (zuege_wied(_zuege))
         return REMIS ;
 
-    if (this->n == 0) {
+    if (this->n_zuege == 0) {
         return PATT ;
     }
     else return NORMAL * Farbe;
@@ -150,7 +140,7 @@ string spielfeld::hash()  {
     std::size_t str_hash = std::hash<std::string>{} (str) +
                                                  std::hash<std::string>{} (str2);
 
-    // std::cout << "hash(" << std::quoted(str) << ") = " << str_hash << '\n';
+    // std::cout << "hash(" << std::quoted(str) << ") = " << str_hash << '\n_zuege';
 
     return to_string(str_hash);
 }
@@ -193,16 +183,21 @@ inline char * spielfeld::to_feld(char _feld[120])  {
 
 inline char * spielfeld::to_feld()  {
     char *_feld = new char [120];
-    { for (int i = 0; i < 120; i++)  {
+    for (int i = 0; i < 120; i++)  {
             _feld[i] = Feld[Stufe][i];
-        } }
+        }
 
     return _feld;
 }
 
 inline void spielfeld::copy(spielfeld& _spiel)  {
     Farbe = _spiel.Farbe;
-    Stufe = _spiel.Stufe;
+    Stufe = _spiel.Stufe+1;
+
+    for (int i = 0; i < 120; i++)  {
+        Feld[Stufe][i] = Feld[_spiel.Stufe][i];
+    }
+
 }
 
 inline void spielfeld::setPos(char _feld[], int _farbe, int _stufe, vector<string> & _zuege) {
@@ -230,19 +225,12 @@ inline int spielfeld::getStufe()  {
 
 inline void spielfeld::zug(denkpaar& _zug)  {
     Beam[Stufe] = _zug.z;
-    setStufe(Stufe + 1);
-
-    for (int i = 0; i < 120; i++)  {
-        Feld[Stufe][i] = Feld[Stufe - 1][i];
-    }
 
     Feld[Stufe][_zug.z.pos.pos2] = Feld[Stufe][_zug.z.pos.pos1];
     Feld[Stufe][_zug.z.pos.pos1] = LEER;
 
     if ((_zug.nw)) {
-        int max = _zug.nw;
-
-        for (int j = 0; j < max; j++)    {
+        for (int j = 0; j < _zug.nw; j++)    {
             Feld[Stufe][_zug.verwandelung[j].pos1] = _zug.verwandelung[j].fig;
         }
     }
@@ -279,16 +267,19 @@ inline void spielfeld::realer_zug(denkpaar& _zug, vector<string>& _zuege)  {
 
 inline void spielfeld::add_zug(const int & pos1,
                                const int & pos2,
-                               const int & _n,
+                               int & _n,
                                const bool& _kill,
                                const int & _figur)  {
-
     zugstapel[Stufe][_n].z.pos.pos1 = pos1;
     zugstapel[Stufe][_n].z.pos.pos2 = pos2;
-    zugstapel[Stufe][_n].z.pos.fig = _figur;
+    zugstapel[Stufe][_n].z.pos.fig  = _figur;
     zugstapel[Stufe][_n].kill       = _kill;
-    n++;
-    return;
+
+    if (!valid_move(zugstapel[Stufe][_n].z)){
+      cout << " adding invalid move";
+    }
+
+    _n+=1;
 }
 
 inline void spielfeld::add_verwandelung(const int& farbe,
@@ -414,6 +405,14 @@ inline void spielfeld::find_kings()  {
                 bking = i;
         }
     }
+
+    if (this->Farbe < 0) {
+        my_king_pos = this->bking;
+        op_king_pos = this->wking;
+    } else {
+        my_king_pos = this->wking;
+        op_king_pos = this->bking;
+    }
 }
 
 
@@ -422,37 +421,36 @@ int enp_l, enp_r;
 int ziel;
 int zugnr = 0;
 int en_passent_bauer = 0;
-int o;
+int o,p;
 int feld;
 
 int spielfeld::zuggenerator()  {
-    int pos1, pos2;
+    char pos1, pos2;
     int enp_l, enp_r;
-    int ziel, zielfeld;
+    char ziel, zielfeld;
     int farbvorzeichen, figur;
+    int p;
+    en_passent_bauer = 0;
+    zugnr = 0;
 
-
-
-    int zugnr = 0;
-
-    n = 0; // Variable der Klasse, wenn man es neu deklarieren wuerde,
+    this->n_zuege = 0;
+    // Variable der Klasse, wenn man es neu deklarieren wuerde,
     // kommt es zu einem seltsamen Fehler in der Zugsortierung,
-    // weil n lokal dann 0 bleibt
-    int en_passent_bauer = 0;
+    // weil n_zuege lokal dann 0 bleibt
 
-    for (int o = 0; o < 199; o++) zugstapel[Stufe][o].nw = 0;
+    for (o = 0; o < 199; o++) zugstapel[Stufe][o].nw = 0;
 
-    for (int i = 21; i <= 98; i++) {
-        figur = (abs(Feld[Stufe][i]));
+    for (p = 21; p <= 98; p++) {
+        figur = (abs(Feld[Stufe][p]));
 
 
         if ((figur == LEER) || (figur == RAND))
 
             continue;
 
-        farbvorzeichen = figur / Feld[Stufe][i];
+        farbvorzeichen = figur / Feld[Stufe][p];
 
-        pos1           = i;
+        pos1           = p;
 
         if (farbvorzeichen == Farbe)      {
             if ((figur == W_Bx) || (figur == W_B) || (figur == W_Bp_r) ||
@@ -469,9 +467,9 @@ int spielfeld::zuggenerator()  {
                 zielfeld = Feld[Stufe][ziel];
 
                 if  (figur == W_Bp_l)  {
-                    add_verwandelung(farbvorzeichen, pos2 - 10 * farbvorzeichen, LEER, n);
-                    add_verwandelung(farbvorzeichen, pos2,      W_B,  n);
-                    add_zug(pos1, pos2, n, true, figur);
+                    add_verwandelung(farbvorzeichen, pos2 - 10 * farbvorzeichen, LEER, n_zuege);
+                    add_verwandelung(farbvorzeichen, pos2, W_B, n_zuege);
+                    add_zug(pos1, pos2, n_zuege, true, figur);
                 }
 
 
@@ -489,31 +487,31 @@ int spielfeld::zuggenerator()  {
                             spezial = UNRUH;
 
                             if (figur == W_Bx) {
-                                add_verwandelung(farbvorzeichen, pos2, W_B, n);
+                                add_verwandelung(farbvorzeichen, pos2, W_B, n_zuege);
                             } else
                             if (figur == W_B)  { // Bauernumwandelung per schlag
                                 if (Farbe > 0)  {
                                     if ((91 <= pos2) && (pos2 <= 98))  {
-                                        add_verwandelung(farbvorzeichen, pos2, W_D, n);
-                                        add_zug(pos1, pos2, n, true, W_D);
-                                        add_verwandelung(farbvorzeichen, pos2, W_P, n);
-                                        add_zug(pos1, pos2, n, true, W_P);
+                                        add_verwandelung(farbvorzeichen, pos2, W_D, n_zuege);
+                                        add_zug(pos1, pos2, n_zuege, true, W_D);
+                                        add_verwandelung(farbvorzeichen, pos2, W_P, n_zuege);
+                                        add_zug(pos1, pos2, n_zuege, true, W_P);
 
                                         //		break;
                                     }
                                 } else
                                 if (Farbe < 0)  {
                                     if ((21 <= pos2) && (pos2 <= 28))  {
-                                        add_verwandelung(farbvorzeichen, pos2, W_D, n);
-                                        add_zug(pos1, pos2, n, true, W_D);
-                                        add_verwandelung(farbvorzeichen, pos2, W_P, n);
-                                        add_zug(pos1, pos2, n, true, W_P);
+                                        add_verwandelung(farbvorzeichen, pos2, W_D, n_zuege);
+                                        add_zug(pos1, pos2, n_zuege, true, W_D);
+                                        add_verwandelung(farbvorzeichen, pos2, W_P, n_zuege);
+                                        add_zug(pos1, pos2, n_zuege, true, W_P);
 
                                         //		break;
                                     }
                                 }
                             }
-                            add_zug(pos1, pos2, n, true, figur);
+                            add_zug(pos1, pos2, n_zuege, true, figur);
                         }
                     }
                 }
@@ -523,9 +521,9 @@ int spielfeld::zuggenerator()  {
                 zielfeld = Feld[Stufe][ziel];
 
                 if  (figur == W_Bp_r)  {
-                    add_verwandelung(farbvorzeichen, pos2 - 10 * farbvorzeichen, LEER, n);
-                    add_verwandelung(farbvorzeichen, pos2,      W_B,  n);
-                    add_zug(pos1, pos2, n, true, figur);
+                    add_verwandelung(farbvorzeichen, pos2 - 10 * farbvorzeichen, LEER, n_zuege);
+                    add_verwandelung(farbvorzeichen, pos2, W_B, n_zuege);
+                    add_zug(pos1, pos2, n_zuege, true, figur);
                 } else
 
                 if (((zielfeld = Feld[Stufe][ziel]) != RAND))   {
@@ -538,31 +536,31 @@ int spielfeld::zuggenerator()  {
                         if (zielfeld / abs(zielfeld) != farbvorzeichen)   {
                             spezial = UNRUH;
 
-                            if (figur == W_Bx) add_verwandelung(farbvorzeichen, pos2, W_B, n);
+                            if (figur == W_Bx) add_verwandelung(farbvorzeichen, pos2, W_B, n_zuege);
                             else
                             if (figur == W_B)  { // Bauernumwandelung per schlag
                                 if (Farbe > 0)  {
                                     if ((91 <= pos2) && (pos2 <= 98))  {
-                                        add_verwandelung(farbvorzeichen, pos2, W_D, n);
-                                        add_zug(pos1, pos2, n, true, figur);
-                                        add_verwandelung(farbvorzeichen, pos2, W_P, n);
-                                        add_zug(pos1, pos2, n, true, figur);
+                                        add_verwandelung(farbvorzeichen, pos2, W_D, n_zuege);
+                                        add_zug(pos1, pos2, n_zuege, true, figur);
+                                        add_verwandelung(farbvorzeichen, pos2, W_P, n_zuege);
+                                        add_zug(pos1, pos2, n_zuege, true, figur);
 
                                         //		break;
                                     }
                                 } else
                                 if (Farbe < 0)  {
                                     if ((21 <= pos2) && (pos2 <= 28))  {
-                                        add_verwandelung(farbvorzeichen, pos2, W_D, n);
-                                        add_zug(pos1, pos2, n, true, figur);
-                                        add_verwandelung(farbvorzeichen, pos2, W_P, n);
-                                        add_zug(pos1, pos2, n, true, figur);
+                                        add_verwandelung(farbvorzeichen, pos2, W_D, n_zuege);
+                                        add_zug(pos1, pos2, n_zuege, true, figur);
+                                        add_verwandelung(farbvorzeichen, pos2, W_P, n_zuege);
+                                        add_zug(pos1, pos2, n_zuege, true, figur);
 
                                         //		break;
                                     }
                                 }
                             }
-                            add_zug(pos1, pos2, n, true, figur);
+                            add_zug(pos1, pos2, n_zuege, true, figur);
                         }
                     }
                 }
@@ -612,16 +610,16 @@ int spielfeld::zuggenerator()  {
                         }
 
                         if (figur == W_Kr) {
-                            add_verwandelung(farbvorzeichen, pos2, W_K, n);
+                            add_verwandelung(farbvorzeichen, pos2, W_K, n_zuege);
                         } else
                         if (figur == W_Tr) {
-                            add_verwandelung(farbvorzeichen, pos2, W_T, n);
+                            add_verwandelung(farbvorzeichen, pos2, W_T, n_zuege);
                         }
 
 
 
                         spezial = UNRUH;
-                        add_zug(pos1, pos2, n, true, figur);
+                        add_zug(pos1, pos2, n_zuege, true, figur);
 
                         break;
                     }
@@ -630,20 +628,20 @@ int spielfeld::zuggenerator()  {
                     if (figur == W_B)  { // Bauernumwandelung
                         if (Farbe > 0)  {
                             if ((91 <= pos2) && (pos2 <= 98))  {
-                                add_verwandelung(farbvorzeichen, pos2, W_D, n);
-                                add_zug(pos1, pos2, n, false, figur);
-                                add_verwandelung(farbvorzeichen, pos2, W_P, n);
-                                add_zug(pos1, pos2, n, false, figur);
+                                add_verwandelung(farbvorzeichen, pos2, W_D, n_zuege);
+                                add_zug(pos1, pos2, n_zuege, false, figur);
+                                add_verwandelung(farbvorzeichen, pos2, W_P, n_zuege);
+                                add_zug(pos1, pos2, n_zuege, false, figur);
 
                                 //		break;
                             }
                         } else
                         if (Farbe < 0)  {
                             if ((21 <= pos2) && (pos2 <= 28))  {
-                                add_verwandelung(farbvorzeichen, pos2, W_D, n);
-                                add_zug(pos1, pos2, n, false, figur);
-                                add_verwandelung(farbvorzeichen, pos2, W_P, n);
-                                add_zug(pos1, pos2, n, false, figur);
+                                add_verwandelung(farbvorzeichen, pos2, W_D, n_zuege);
+                                add_zug(pos1, pos2, n_zuege, false, figur);
+                                add_verwandelung(farbvorzeichen, pos2, W_P, n_zuege);
+                                add_zug(pos1, pos2, n_zuege, false, figur);
 
                                 //		break;
                             }
@@ -654,10 +652,10 @@ int spielfeld::zuggenerator()  {
                                 farbvorzeichen,
                                 pos2,
                                 W_B,
-                                n);
+                                n_zuege);
                     else
                     if (figur == W_Bx) {
-                        add_verwandelung(farbvorzeichen, pos2, W_B, n);
+                        add_verwandelung(farbvorzeichen, pos2, W_B, n_zuege);
 
                         if (weite == 1)  {
                             enp_r = Feld[Stufe][pos2 + farbvorzeichen];
@@ -667,14 +665,14 @@ int spielfeld::zuggenerator()  {
                                 add_verwandelung(farbvorzeichen * -1,
                                                  pos2 + farbvorzeichen,
                                                  W_Bp_r,
-                                                 n);
+                                                 n_zuege);
                             }
 
                             if (enp_l == -1 * W_B * farbvorzeichen)  {
                                 add_verwandelung(farbvorzeichen * -1,
                                                  pos2 - farbvorzeichen,
                                                  W_Bp_l,
-                                                 n);
+                                                 n_zuege);
                             }
                         }
                     }
@@ -692,13 +690,13 @@ int spielfeld::zuggenerator()  {
                     }
 
                     if (figur == W_Kr) {
-                        add_verwandelung(farbvorzeichen, pos2, W_K, n);
+                        add_verwandelung(farbvorzeichen, pos2, W_K, n_zuege);
                     } else
                     if (figur == W_Tr) {
-                        add_verwandelung(farbvorzeichen, pos2, W_T, n);
+                        add_verwandelung(farbvorzeichen, pos2, W_T, n_zuege);
                     }
 
-                    add_zug(pos1, pos2, n, false, figur);
+                    add_zug(pos1, pos2, n_zuege, false, figur);
                 }
             }
         }
@@ -716,10 +714,10 @@ int spielfeld::zuggenerator()  {
                                   96, 95) &&
                     !test_drohung(Feld[Stufe], Farbe,
                                        97, 95))  {
-                    add_verwandelung(Farbe, 97, W_K,  n);
-                    add_verwandelung(Farbe, 96, W_T,  n);
-                    add_verwandelung(Farbe, 98, LEER, n);
-                    add_zug(95, 97, n, false, figur);
+                    add_verwandelung(Farbe, 97, W_K, n_zuege);
+                    add_verwandelung(Farbe, 96, W_T, n_zuege);
+                    add_verwandelung(Farbe, 98, LEER, n_zuege);
+                    add_zug(95, 97, n_zuege, false, figur);
                 }
             }
 
@@ -731,10 +729,10 @@ int spielfeld::zuggenerator()  {
                     !test_drohung(Feld[Stufe], Farbe,
                                   94, 95) &&
                     !test_drohung(Feld[Stufe], Farbe, 93, 95))  {
-                    add_verwandelung(Farbe, 93, W_K,  n);
-                    add_verwandelung(Farbe, 94, W_T,  n);
-                    add_verwandelung(Farbe, 91, LEER, n);
-                    add_zug(95, 93, n, false, figur);
+                    add_verwandelung(Farbe, 93, W_K, n_zuege);
+                    add_verwandelung(Farbe, 94, W_T, n_zuege);
+                    add_verwandelung(Farbe, 91, LEER, n_zuege);
+                    add_zug(95, 93, n_zuege, false, figur);
                 }
             }
         } else
@@ -746,10 +744,10 @@ int spielfeld::zuggenerator()  {
                     !test_drohung(Feld[Stufe], Farbe,
                                   26, 25) &&
                     !test_drohung(Feld[Stufe], Farbe, 27, 25))  {
-                    add_verwandelung(Farbe, 27, W_K,  n);
-                    add_verwandelung(Farbe, 26, W_T,  n);
-                    add_verwandelung(Farbe, 28, LEER, n);
-                    add_zug(25, 27, n, false, figur);
+                    add_verwandelung(Farbe, 27, W_K, n_zuege);
+                    add_verwandelung(Farbe, 26, W_T, n_zuege);
+                    add_verwandelung(Farbe, 28, LEER, n_zuege);
+                    add_zug(25, 27, n_zuege, false, figur);
                 }
             }
 
@@ -761,10 +759,10 @@ int spielfeld::zuggenerator()  {
                     !test_drohung(Feld[Stufe], Farbe,
                                   24, 24) &&
                     !test_drohung(Feld[Stufe], Farbe, 23, 25))  {
-                    add_verwandelung(Farbe, 23, W_K,  n);
-                    add_verwandelung(Farbe, 24, W_T,  n);
-                    add_verwandelung(Farbe, 21, LEER, n);
-                    add_zug(25, 23, n, false, figur);
+                    add_verwandelung(Farbe, 23, W_K, n_zuege);
+                    add_verwandelung(Farbe, 24, W_T, n_zuege);
+                    add_verwandelung(Farbe, 21, LEER, n_zuege);
+                    add_zug(25, 23, n_zuege, false, figur);
                 }
             }
         }
@@ -775,7 +773,7 @@ int spielfeld::zuggenerator()  {
     if (en_passent_bauer != 0)  {
         int q;
 
-        for (q = 0; q < n; q++)  {
+        for (q = 0; q < n_zuege; q++)  {
             figur = zugstapel[Stufe][q].z.pos.fig;
 
             if (!((figur  == W_Bp_l) || (figur  == W_Bp_r)))  {
@@ -783,7 +781,7 @@ int spielfeld::zuggenerator()  {
             }
         }
     }
-    return n;
+    return n_zuege;
 }
 
 
@@ -840,14 +838,14 @@ inline bool spielfeld::schach(int _farbe)  {
                                                     break;
                                             return 0;
                                             }
-                                            add_zug(pos1, pos2, n, true);
+                                            add_zug(pos1, pos2, n_zuege, true);
                                     break;
                                     }
-                            add_zug(pos1, pos2, n);
+                            add_zug(pos1, pos2, n_zuege);
                                     }
                             }
                     }
-            return n;*/
+            return n_zuege;*/
     return 0;
 }
 
@@ -915,8 +913,8 @@ void spielfeld::switch_feld()  {
 }
 
 void spielfeld::print_zugstapel()  {
-    cout << "n=" << n << endl;
-    for (int i = 0; i < n; i++)  {
+    cout << "n_zuege=" << n_zuege << endl;
+    for (int i = 0; i < n_zuege; i++)  {
         cout << figuren_char[zugstapel[Stufe][i].z.pos.fig  + figurenanzahl] << ": "
              << int(zugstapel[Stufe][i].z.pos.pos1) << "(" <<
              grundfeld_bezeichnungen[zugstapel[Stufe][i].z.pos.pos1] << ")  => "

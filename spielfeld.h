@@ -29,7 +29,7 @@ public:
     int         zuggenerator();
     inline void add_zug(const int & pos1,
                         const int & pos2,
-                        const int & n,
+                        int & n,
                         const bool& _kill,
                         const int & _figur);
     inline void add_verwandelung(const int& farbe,
@@ -38,11 +38,14 @@ public:
                                  const int& n);
 
 
-    int n;
+    int n_zuege;
+
     int nn;
     int Stufe;
     int Farbe;
     int spezial;
+
+    int my_king_pos, op_king_pos;
     int wking = 99;
     int bking = 99;
     int test = 0;

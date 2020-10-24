@@ -1,3 +1,4 @@
+#include <omp.h>
 #include "intelligence.h"
 #include "spielfeld.h"
 #include "bewertung.cpp"
@@ -25,6 +26,8 @@ static void init_test_spiel_array() {
 
 static const set<int> ENDS = { WON  ,LOST , PATT, REMIS, MAX_WERT};
 char  * bewertungs_feld;
+int null_move_value;
+const int R = 1;
 
 static int _bp(
         spielfeld & spiel,
@@ -37,6 +40,7 @@ static int _bp(
 ) {// Bewertung, Planung
 
     if (((level + 1 > _stopp) || (level + 1 >= ende))) {
+
         bewertungs_feld = Feld[stufe];
         int wertung = rand() % 3 - 1;
 
@@ -61,12 +65,10 @@ static int _bp(
 
     int wertung = 0;
 
-    //make_schema(zugstapel[stufe], spiel.n, stufe);
+    //make_schema(zugstapel[stufe], spiel.n_zuege, stufe);
 
     spiel.makeZugstapel();
 
-    // Todo partien zuvor
-    //spiel.disp();
     int end = spiel.check_end(*new vector<string>);
     if (ENDS.find(end) != ENDS.end())  {
         //graph_debug(farbe, alpha, beta, stufe, wertung, END_NAMES[end]);
@@ -78,25 +80,55 @@ static int _bp(
 
     }
 
-    sort(zugstapel[stufe], spiel.n, stufe);
-    int n = spiel.n;  // Anzahl der Zuege
+    sort(zugstapel[stufe], spiel.n_zuege, stufe);
+    const int n = spiel.n_zuege;  // Anzahl der Zuege
     int step;
-    denkpaar *move;
+    denkpaar * move;
+
     for (int i = 0; i < n; i++) {
-        move = &zugstapel[stufe][i];
+        move = & zugstapel[stufe][i];
         step =  move->kill ? 1 : 1;
+        testspiel[stufe].copy(spiel);
+        testspiel[stufe].zug(*move);
+
+        /*
+        if (ENDS.find(alpha)== ENDS.end() &&
+            ENDS.find(beta)== ENDS.end() &&
+            testspiel[stufe].test_drohung(Feld[stufe], farbe,spiel.my_king_pos, spiel.my_king_pos)){
+            null_move_value = -_bp(
+            testspiel[stufe],
+            -farbe,
+            -beta,
+            -beta+1,
+            stufe + 1,
+            _stopp,
+            level + R + 1);
+
+            if (ENDS.find(null_move_value)== ENDS.end()  && null_move_value>= beta) {
+                // cutoff in case of fail-high
+                alpha = null_move_value;
+                break;
+            }
+            testspiel[stufe].copy(spiel);
+        }*/
+
 
         /*
         if (!valid_move(move->z)) {
-            //cout << "nothing moving";
-            //print_move(cout, move->z, stufe);
+            print_move(cout, move->z, stufe);
+            print_moves(Beam, stufe);
+            cout << "nothing moving\n";
+            spiel.makeZugstapel();
+
+            continue;
         }
-        if (!valid_figure(move->z, Feld[stufe], stufe)) {
-            //cout << "invalid figure on move";
+        if (!valid_figure(move->z,  spiel.to_feld(), stufe)) {
+            //spiel.disp();
+            print_moves(Beam, stufe);
+
+            cout << "invalid figure on move \n";
         }*/
 
-        testspiel[stufe].copy(spiel);
-        testspiel[stufe].zug(*move);
 
         aktueller_zug[stufe] = *move;
 
@@ -173,7 +205,7 @@ static int _bp(
     }
     //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
 
-    make_schema(zugstapel[stufe], spiel.n, stufe);
+    make_schema(zugstapel[stufe], spiel.n_zuege, stufe);
 
 
     switch (stufe)  {
@@ -277,7 +309,7 @@ void graph_debug(int farbe, int alpha, double beta, int stufe, double wertung, s
                  << " Bewertung: "
                  << setw(5) << wertung
                  << ", Zug-ID "
-                 << setw(6) << aktueller_zug[0].z.id << "\n";
+                 << setw(6) << aktueller_zug[0].z.id << "\n_zuege";
             cout.flush();
         }
         //else { if (stufe == 0) cout << "*" << flush;}
@@ -329,6 +361,7 @@ static int run_speaking(int _stopp, spielfeld &spiel) {
          "\n";
     cout << "bestmove ->" <<bester_zug[0].z.pos.pos1<< "-< "<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
          << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";
+    cout << "evaluations " << evaluations << endl;
     return wert;
 }
 

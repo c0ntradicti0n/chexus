@@ -107,6 +107,11 @@ TEST(module_name, test_schach_abzug_material )  {
     ASSERT_EQ(move != "f6e4", true);
 }
 
+TEST(module_name, test_stupid_queen_move )  {
+    string move = make_move(stupid_move_of_queen, false, 1);
+    ASSERT_EQ(move != "a2d2", true);
+}
+
 TEST(module_name, test_schach_pointless_move_when_check )  {
     string move = make_move(pointless_move_when_check, false, -1);
     ASSERT_EQ(move != "e2e1", true);

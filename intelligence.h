@@ -37,7 +37,7 @@ struct feldtyp  {
 };
 
 int eigene_farbe = 1;  // Sicht des Computers --1-0
-char STOPP        = 7;  // normale Suchtiefe
+char STOPP       = 6;  // normale Suchtiefe
 const int ende   = 15; // maximale Suchtiefe
 int sortiertiefe = 199; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
 //int figurenwert_weiss = 0;
