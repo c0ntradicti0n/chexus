@@ -112,6 +112,15 @@ TEST(module_name, test_stupid_queen_move )  {
     ASSERT_EQ(move != "a2d2", true);
 }
 
+TEST(module_name, test_stupid_queen_move2 )  {
+    string move = make_move(stupid_move_of_queen2, false, -1);
+    ASSERT_EQ(move != "g2f1", true);
+}
+TEST(module_name, test_stupid_queen_move3 )  {
+    string move = make_move(stupid_move_of_queen3, false, 1);
+    ASSERT_EQ(move != "d4f6", true);
+}
+
 TEST(module_name, test_schach_pointless_move_when_check )  {
     string move = make_move(pointless_move_when_check, false, -1);
     ASSERT_EQ(move != "e2e1", true);

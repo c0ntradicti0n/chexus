@@ -34,41 +34,12 @@ inline float entwicklung(char * &feld, int &farbe)    {
 inline float material(char * &feld, int & farbe)  {
     double wert = 0;
     int    figur;
-    for(int j=21; j<99; ++j) {kingzone_gegner[j] = 0;kingzone_ich[j] = 0;}
     for (int i = 21; i <= 98; i++)     {
         figur = feld[i];
 
         if ((figur == RAND) || (figur == LEER)) continue;
-        wert += figur * materialwert[abs(figur)];
 
-        //	cout << OpenLines[3] << "\n_zuege";
-        //		if (abs(figur)<6) {	OpenLines[i%10-1]=0;}
-
-        //	cout << OpenLines[3] << "\n_zuege";
-
-        /*if ((abs(figur) == W_K||abs(figur) == W_Kr) && (feld[i]/abs(figur)) != farbe)
-           {kingzone_gegner[i] = 1;
-           kingzone_gegner[i+1] = 1;
-           kingzone_gegner[i-1] = 1;
-           kingzone_gegner[i-9] = 1;
-           kingzone_gegner[i-10] = 1;
-           kingzone_gegner[i-11] = 1;
-           kingzone_gegner[i+9] = 1;
-           kingzone_gegner[i+10] = 1;
-           kingzone_gegner[i+11] = 1;}//*/
-        /*  if ((abs(figur) == W_K||abs(figur) == W_Kr) && (feld[i]/abs(figur)) == farbe)
-          {
-
-              kingzone_ich[i] = 1;
-          kingzone_ich[i+1] = 1;
-          kingzone_ich[i-1] = 1;
-          kingzone_ich[i-9] = 1;
-          kingzone_ich[i-10] = 1;
-          kingzone_ich[i-11] = 1;
-          kingzone_ich[i+9] = 1;
-          kingzone_ich[i+10] = 1;
-          kingzone_ich[i+11] = 1;
-          }//*/
+        wert += farbe * figur;
     }
 
     return wert;
@@ -131,7 +102,7 @@ inline int zuganzahl(char feld[120], int _eigene_farbe)  { // Zaehlt Zuege von
                     if (zielfeld != LEER)  {
                         if (zielfeld == RAND) // Aus!
                             break;
-                        zielfigur = (zielfeld > 0) - (zielfeld < 0);
+                        zielfigur = abs((zielfeld > 0) - (zielfeld < 0));
 
                         if (farbvorzeichen != _eigene_farbe)  {
                             if (zielfeld / _eigene_farbe > 0) {                // Gegner greift meine Figur an

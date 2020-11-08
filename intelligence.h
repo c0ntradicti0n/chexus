@@ -37,8 +37,8 @@ struct feldtyp  {
 };
 
 int eigene_farbe = 1;  // Sicht des Computers --1-0
-char STOPP       = 6;  // normale Suchtiefe
-const int ende   = 15; // maximale Suchtiefe
+char STOPP       = 5;  // normale Suchtiefe
+const int ende   = 10; // maximale Suchtiefe
 int sortiertiefe = 199; // Sortiertiefe - wieviele Z¬∏ge werden sortiert
 //int figurenwert_weiss = 0;
 //int figurenwert_schwarz = 0;
@@ -566,7 +566,7 @@ static float materialwert[15] = // Materialwert
                 0,                      // NIL! 0
                 100,                    // Startbauer 1
                 500,                    // durchgestarteter Startbauer 2
-                33.3,                  // en passant Bauer 3
+                33.3,                   // en passant Bauer 3
                 2250,                   // Superbauer 4
                 20,                     // Bauer 5
                 66.666666666667,        // Pferd 6

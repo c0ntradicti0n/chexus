@@ -36,30 +36,9 @@ static int _bp(
         double beta,
         int stufe,
         int _stopp,
-        int level
+        int level,
+        bool quiet = false
 ) {// Bewertung, Planung
-
-    if (((level + 1 > _stopp) || (level + 1 >= ende))) {
-
-        bewertungs_feld = Feld[stufe];
-        int wertung = rand() % 3 - 1;
-
-        wertung += 1.5 * material(bewertungs_feld, farbe); //8.75-9		90
-
-
-        if (alpha < wertung * farbe + 30) {
-            wertung += 1.55 *
-                       entwicklung(bewertungs_feld, farbe);        //0.375-0.4		-->160		1.6
-
-            wertung += 0.1 *
-                       zuganzahl(bewertungs_feld, farbe); //0,8;0.076
-
-        }
-
-        //graph_debug(farbe, alpha, beta, stufe, wertung, "");
-        evaluations +=1;
-        return farbe * wertung;
-    }
 
     spiel.Farbe = farbe;
 
@@ -68,6 +47,17 @@ static int _bp(
     //make_schema(zugstapel[stufe], spiel.n_zuege, stufe);
 
     spiel.makeZugstapel();
+
+    if (((!spiel.KILL && (level + 1 > _stopp)) || (level + 1 >= ende))) {
+        bewertungs_feld = Feld[stufe];
+
+        if ((!spiel.KILL && (level + 1 > _stopp)) || (level + 1 >= ende))
+            return material(bewertungs_feld, farbe) - 100;
+        evaluations += 1;
+        wertung = material(bewertungs_feld, farbe);
+        return wertung;
+    }
+
 
     int end = spiel.check_end(*new vector<string>);
     if (ENDS.find(end) != ENDS.end())  {
@@ -84,34 +74,49 @@ static int _bp(
     const int n = spiel.n_zuege;  // Anzahl der Zuege
     int step;
     denkpaar * move;
+    bool alpha_return = true;
+
+    if (level >= _stopp) {
+        quiet = true;
+    }
 
     for (int i = 0; i < n; i++) {
         move = & zugstapel[stufe][i];
-        step =  move->kill ? 1 : 1;
+        if (quiet && !move->kill) {
+            continue;
+        }
+
+            step =  move->kill ? 1 : 1;
+
         testspiel[stufe].copy(spiel);
         testspiel[stufe].zug(*move);
 
         /*
+
         if (ENDS.find(alpha)== ENDS.end() &&
             ENDS.find(beta)== ENDS.end() &&
-            testspiel[stufe].test_drohung(Feld[stufe], farbe,spiel.my_king_pos, spiel.my_king_pos)){
+            !testspiel[stufe].test_drohung(Feld[stufe], farbe,spiel.my_king_pos, spiel.my_king_pos) &&
+            !testspiel[stufe].test_drohung(Feld[stufe], farbe,spiel.op_king_pos, spiel.op_king_pos) ){
+
+
             null_move_value = -_bp(
             testspiel[stufe],
-            -farbe,
+            farbe,
             -beta,
             -beta+1,
             stufe + 1,
             _stopp,
-            level + R + 1);
+            level + R + 1,
+            quiet);
 
             if (ENDS.find(null_move_value)== ENDS.end()  && null_move_value>= beta) {
                 // cutoff in case of fail-high
-                alpha = null_move_value;
-                break;
+                //graph_debug(farbe, alpha, beta, stufe, wertung, "NullMove");
+                return beta;
             }
             testspiel[stufe].copy(spiel);
-        }*/
-
+        }
+*/
 
         /*
         if (!valid_move(move->z)) {
@@ -163,7 +168,9 @@ static int _bp(
                 -alpha,
                 stufe + 1,
                 _stopp,
-                level + step);
+                level + step,
+                quiet
+        );
 
 
         zugstapel[stufe][i].bewertung = wertung;
@@ -182,6 +189,7 @@ static int _bp(
             //best_one[stufe].bewertung *= 0.5; //ACHTUNG 5
 
             //graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
+            alpha_return = false;
             break;  //  fail hard beta-cutoff
         }
 
@@ -203,10 +211,15 @@ static int _bp(
         cout<< "# alpha="  << alpha << " beta "<< beta<< " wertung " << wertung<< endl;
         throw "returning -max value as best";
     }
-    //graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
 
     make_schema(zugstapel[stufe], spiel.n_zuege, stufe);
 
+
+    /*if (alpha_return)
+        graph_debug(farbe, alpha, beta, stufe, wertung, "AlphaReturn");
+    else
+        graph_debug(farbe, alpha, beta, stufe, wertung, "BetaReturn");
+    */
 
     switch (stufe)  {
         case 0:

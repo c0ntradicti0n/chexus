@@ -270,10 +270,14 @@ inline void spielfeld::add_zug(const int & pos1,
                                int & _n,
                                const bool& _kill,
                                const int & _figur)  {
+    if (_kill) {
+        KILL = true;
+    }
     zugstapel[Stufe][_n].z.pos.pos1 = pos1;
     zugstapel[Stufe][_n].z.pos.pos2 = pos2;
     zugstapel[Stufe][_n].z.pos.fig  = _figur;
     zugstapel[Stufe][_n].kill       = _kill;
+
 
     if (!valid_move(zugstapel[Stufe][_n].z)){
       cout << " adding invalid move";
@@ -425,6 +429,7 @@ int o,p;
 int feld;
 
 int spielfeld::zuggenerator()  {
+    KILL = false;
     char pos1, pos2;
     int enp_l, enp_r;
     char ziel, zielfeld;
@@ -628,6 +633,7 @@ int spielfeld::zuggenerator()  {
                     if (figur == W_B)  { // Bauernumwandelung
                         if (Farbe > 0)  {
                             if ((91 <= pos2) && (pos2 <= 98))  {
+
                                 add_verwandelung(farbvorzeichen, pos2, W_D, n_zuege);
                                 add_zug(pos1, pos2, n_zuege, false, figur);
                                 add_verwandelung(farbvorzeichen, pos2, W_P, n_zuege);

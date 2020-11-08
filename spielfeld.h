@@ -97,6 +97,10 @@ public:
 
     void switch_feld();
 
+    void  add_verwandelung_zug(int farbvorzeichen, char pos2, figuren figuren, int & zuege,
+                               char pos1, char pos21, int & zuege1, bool b, int figur);
+
+    bool KILL;
 };
 
 
