@@ -76,13 +76,13 @@ int spielfeld::check_end(vector<string> &_zuege) {
     //cout << "STUFE::: "<< this ->getStufe() << " w king: "<< this->wking << " b king: " << this->bking;
 
     if (this -> wking == 0)  {
-        disp();
-        cout << "He took the white king!\n";
+        //disp();
+        //cout << "He took the white king!\n";
         return LOST ;
     }
     if (this -> bking == 0)  {
         cout << "He took the black king!\n";
-        disp();
+        //disp();
         return LOST ;
     }
 

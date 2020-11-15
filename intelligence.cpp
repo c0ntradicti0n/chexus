@@ -193,7 +193,7 @@ static int _bp(
             break;  //  fail hard beta-cutoff
         }
 
-        if (stufe==0 && _stopp == STOPP) {
+        /*if (stufe==0 && _stopp == STOPP) {
             cout << ""
                  << grundfeld_bezeichnungen[aktueller_zug[0].z.pos.pos1]
                  << " => "	<< grundfeld_bezeichnungen[aktueller_zug[0].z.pos.pos2]
@@ -201,14 +201,11 @@ static int _bp(
                  << setw(5) << wertung
                  <<", Zug-ID "
                  << setw(6) << aktueller_zug[0].z.id << "\n";
-            cout.flush(); }
-
-
-
+            cout.flush(); }*/
     }
     if (abs(alpha) == MAX_WERT)  {
-        spiel.disp();
-        cout<< "# alpha="  << alpha << " beta "<< beta<< " wertung " << wertung<< endl;
+        //spiel.disp();
+        //cout<< "# alpha="  << alpha << " beta "<< beta<< " wertung " << wertung<< endl;
         throw "returning -max value as best";
     }
 
@@ -358,7 +355,7 @@ static int run(int _stopp, spielfeld &spiel) {
 }
 static int run_speaking(int _stopp, spielfeld &spiel) {
     int wert =  bp(spiel, spiel.Farbe,  -MAX_WERT, MAX_WERT, 0, _stopp, /*devwert, */0);
-    cout << "info depth " << STOPP << " score cp " << wert / 1.5 << " pv " <<
+    cout << "info depth " << (int) STOPP << " score cp " << wert / 1.5 << " pv " <<
          " " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2]
          <<"(" << bester_zug[0].bewertung <<")" <<
          " " << grundfeld_bezeichnungen[bester_zug[1].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[1].z.pos.pos2]
@@ -372,7 +369,7 @@ static int run_speaking(int _stopp, spielfeld &spiel) {
          " " << grundfeld_bezeichnungen[bester_zug[5].z.pos.pos1]<< grundfeld_bezeichnungen[bester_zug[5].z.pos.pos2]
          <<"(" << bester_zug[5].bewertung <<")" <<
          "\n";
-    cout << "bestmove ->" <<bester_zug[0].z.pos.pos1<< "-< "<< grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
+    cout << "bestmove " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
          << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";
     cout << "evaluations " << evaluations << endl;
     return wert;

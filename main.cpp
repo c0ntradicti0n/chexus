@@ -18,7 +18,7 @@ using namespace std;
 #include "intelligence.cpp"
 #include "spielfeld.cpp"
 
-ofstream spoken("spoken");
+ofstream spoken("spoken.txt");
 
 string getString(string *names, int index, int index_index);
 
@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
     bool allein = false;
     bool _user = false;
     feldtyp *xbrettchen = new feldtyp;
+    denkpaar *xzugstapel = new denkpaar[200];
 
 
     bool exit = false;
@@ -105,7 +106,7 @@ int main(int argc, char **argv) {
                     ii++;
                 }
                 cout << " geladenes spielfeld: \n";
-                disp(grundfeld);
+                //disp(grundfeld);
                 geladen = true;
             }
                 break;
@@ -165,7 +166,7 @@ int main(int argc, char **argv) {
             // wichtige Initkommandos - wo man antworten muss
 
             if (command == "uci") {
-                cout << "id name NEXUS 181102\n";  // 750250 6000
+                cout << "id name NEXUS 201112 155 55 59 32\n";  // 750250 6000
                 cout << "id author Albrecht Fiebiger & Stefan Werner\n";
                 cout << "uciok\n";
             }
@@ -201,10 +202,11 @@ int main(int argc, char **argv) {
                             int j;
                             for (i = 0; i <= 7; i++) {
                                 if ((command[0] == buchstaben1[i]) ||
-                                    (command[0] == buchstaben2[i])) {
+                                        (command[0] == buchstaben2[i])) {
                                     for (j = 0; j <= 7; j++) {
                                         if (command[1] == zahlen[j]) {
                                             _zug.z.pos.pos1 = 21 + j * 10 + i;
+                                            break;
                                         }
                                     }
                                 }
@@ -223,12 +225,13 @@ int main(int argc, char **argv) {
                             spiel.makeZugstapel();
                             bool falsch = true;
                             for (i = 0; i < spiel.n_zuege; i++) {
-                                if ((zugstapel[spiel.Stufe][i].z.id == _zug.z.id)) {
+                                if ((zugstapel[spiel.Stufe][i].z.pos.pos1 == _zug.z.pos.pos1 &&
+                                     zugstapel[spiel.Stufe][i].z.pos.pos2 == _zug.z.pos.pos2)) {
+
                                     spiel.realer_zug(zugstapel[spiel.Stufe][i], zuege);
 
-                                    spiel.zug_reset();
                                     _zug = zugstapel[spiel.Stufe][i];
-                                    //	Analysedatei.note (_zug, eigene_farbe * -1, false);
+
                                     falsch = false;
                                     break;
                                 }
@@ -246,12 +249,13 @@ int main(int argc, char **argv) {
             if (command == "go") {
                 t1 = clock();
                 spiel.setStufe(0);
+                spiel.disp();
 
                 for (int _stopp = 1;; _stopp++) {
                     make_schema(zugstapel[spiel.getStufe()], spiel.n_zuege, 0);
                     move_sort_schema();
 
-                    wert =  run_speaking(_stopp, spiel);
+                    wert =  run(_stopp, spiel);
                     if ((clock() - t1 >= 300) && (_stopp >= STOPP))
                         break;
                 }
@@ -289,6 +293,15 @@ int main(int argc, char **argv) {
                         break;
                     }
                 }
+                cout << "info depth " << (int) STOPP << " score cp " << wert/1.5 << " pv " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
+                     << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << " " << grundfeld_bezeichnungen[bester_zug[1].z.pos.pos1]
+                     << grundfeld_bezeichnungen[bester_zug[1].z.pos.pos2] << " " << grundfeld_bezeichnungen[bester_zug[2].z.pos.pos1]
+                     << grundfeld_bezeichnungen[bester_zug[2].z.pos.pos2] << " " << grundfeld_bezeichnungen[bester_zug[3].z.pos.pos1]
+                     << grundfeld_bezeichnungen[bester_zug[3].z.pos.pos2] << " " << grundfeld_bezeichnungen[bester_zug[4].z.pos.pos1]
+                     << grundfeld_bezeichnungen[bester_zug[4].z.pos.pos2] << "\n";
+                cout << "bestmove " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos1]
+                     << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";
+
 
                 zug_nummer += 1;
             }
@@ -303,41 +316,44 @@ int main(int argc, char **argv) {
 
         if (!((zug_nummer == 1) && (eigene_farbe == 1))) {  // Benutzerzug
             bool ok = false;
-            spiel.disp();
             do {
                 if (allein) {
                     eigene_farbe *= -1;
                     break;
                 }
+                denkpaar *zugstapel = new denkpaar[200];
                 int spez;
                 int n = spiel.zuggenerator();
 
+
                 cout << "Zug " << zug_nummer << ", von ";
                 pos1 = eingabe();
-                if (pos1 == 123 || pos2 == 123) {
+                if (pos1 == 666 || pos2 == 666) {
                     eigene_farbe *= -1;
                     break;
                 }
                 cout << "nach ";
                 pos2 = eingabe();
 
-                if (pos1 == 123 || pos2 == 123) {
+                if (pos1 == 666 || pos2 == 666) {
                     eigene_farbe *= -1;
                     break;
                 }
 
                 for (int i = 0; i < n; i++) {
-                    zug z = zugstapel[spiel.getStufe()][i].z;
-                    if ((z.pos.pos1 == pos1) &&
-                        z.pos.pos2 == pos2) {
+                    if ((zugstapel[i].z.pos.pos1 == pos1) &&
+                            (zugstapel[i].z.pos.pos2 == pos2)) {
                         ok = true;
-                        spiel.realer_zug(zugstapel[spiel.getStufe()][i], zuege);
+                        spiel.realer_zug(zugstapel[i], zuege);
+                        //zuege_append(zuege, spiel.hash());
+                        //if (zuege_wied(zuege)) exit = true;
+                        spiel.zug_reset();
                         break;
                     }
                 }
                 if (ok == false)
                     cout << "\nUnmoegliche Eingabe, vertippt?\n";
-
+                delete[] zugstapel;
             } while (!ok);
         }
 
@@ -375,7 +391,6 @@ int main(int argc, char **argv) {
              << " => " << grundfeld_bezeichnungen[bester_zug[0].z.pos.pos2] << "\n";
 
         spiel.realer_zug(bester_zug[0], zuege);
-        spiel.disp();
 
         exit = true;
         switch (spiel.check_end(zuege)) {
@@ -407,13 +422,13 @@ int main(int argc, char **argv) {
             }
         }
 
-        //spiel.zug_reset();
+        spiel.zug_reset();
         zug_nummer++;
 
     } while (!exit);
 
     cout << "\n\n							"
-            "ENDE\n";
+         "ENDE\n";
 
     spoken.close();
     return 0;
